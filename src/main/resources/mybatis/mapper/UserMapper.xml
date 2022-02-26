@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org//dtd//mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dreamtea.Mapper.UserMapper">
+    <!-- User result map   -->
+    <resultMap id="UserResultMap" type="User">
+        <result column="user_name" property="userName"/>
+        <result column="password" property="password"/>
+        <result column="user_nick" property="userNick"/>
+        <result column="user_played" property="userPlayed"/>
+        <result column="user_won" property="userWon"/>
+        <result column="user_lost" property="userLost"/>
+        <result column="user_score" property="userScore"/>
+        <result column="user_login" property="userLogin"/>
+    </resultMap>
+    
+    <select id="login" resultMap="UserResultMap" resultType="User">
+        select * from tb_user where user_name = #{user_name} and password = #{password}
+    </select>
+</mapper>

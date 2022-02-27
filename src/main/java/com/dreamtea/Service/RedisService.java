@@ -1,9 +1,10 @@
-package com.dreamtea.Utils;
+package com.dreamtea.Service;
 
+import com.dreamtea.Utils.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
@@ -16,13 +17,13 @@ import java.util.concurrent.TimeUnit;
  * redisTemplate封装
  *
  */
-@Component
-public class RedisUtil {
+@Service
+public class RedisService {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    public RedisUtil(RedisTemplate<String, Object> redisTemplate) {
+    public RedisService(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 

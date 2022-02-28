@@ -34,6 +34,11 @@ public class PageController {
         return "login";
     }
 
+    @GetMapping("/room")
+    public String roomPage() {
+        return "room";
+    }
+
     @PostMapping("/login")
     public String doLogin(@RequestParam(name = "user_name", required = false) String userName, @RequestParam(name = "password", required = false) String password, HttpServletRequest request , HttpServletResponse response) {
 //        System.out.println(request.getSession().getAttribute("token"));
@@ -65,7 +70,7 @@ public class PageController {
 //            response.addHeader("Authorization", token);
 //            System.out.println(response.getHeader("Authorization"));
             request.getSession().setAttribute("token", token);
-            return "redirect:/game";
+            return "redirect:/room";
         } else {
 //            model.addAttribute("login_msg", "incorrect credentials");
             return "redirect:/login";

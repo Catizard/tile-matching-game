@@ -2,6 +2,7 @@ package com.dreamtea.Controller;
 
 import com.dreamtea.Domain.World;
 import com.dreamtea.Service.RedisService;
+import com.dreamtea.Service.RoomService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class ActionController {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    RoomService roomService;
 
     @GetMapping("/getMap")
     public String getMap() throws JsonProcessingException {
@@ -59,5 +63,10 @@ public class ActionController {
             System.out.println(redisService.get(getName));
         }
         return "";
+    }
+
+    @GetMapping("/getRoomList")
+    public String getRoomList() throws JsonProcessingException {
+        return objectMapper.writeValueAsString(roomService.getRoomList());
     }
 }

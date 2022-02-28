@@ -16,7 +16,7 @@ class LlkApplicationTests {
         list.add(1);
         list.add(2);
         ObjectMapper objectMapper = new ObjectMapper();
-        System.out.println(objectMapper.writeValueAsString(list));
+//        System.out.println(objectMapper.writeValueAsString(list));
     }
 
 }

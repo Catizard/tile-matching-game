@@ -1,9 +1,10 @@
 package com.dreamtea.Utils;
 
-import java.io.*;
-import java.net.URL;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -27,7 +28,7 @@ public class MapUtil {
                 j = 0;
             }
         }
-        System.out.println("the total is:" + all);
+//        System.out.println("the total is:" + all);
     }
 
     public static ArrayList<Integer> readMap(String fileName) {

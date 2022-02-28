@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,23 +16,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("text/html;charset=utf-8");
-
-        Cookie[] cookies = request.getCookies();
-        if(cookies == null) {
-            response.sendRedirect("/login");
-            return false;
-        }
-
-        String token = null;
-        for (Cookie cookie : cookies) {
-            if("token".equals(cookie.getName())) {
-                token = cookie.getValue();
-                break;
-            }
-        }
-
+        String token = response.getHeader("Authorization");
         if(StringUtil.isNullOrEmpty(token)) {
             response.sendRedirect("/login");
             return false;

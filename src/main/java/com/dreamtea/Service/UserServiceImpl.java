@@ -11,11 +11,10 @@ import java.util.UUID;
 @Service("userService")
 public class UserServiceImpl implements UserService{
     @Autowired
-    UserMapper userMapper;
+    private UserMapper userMapper;
 
     @Autowired
-    RedisService redisService;
-
+    private RedisService redisService;
 
     @Override
     public User login(String userName, String password) {

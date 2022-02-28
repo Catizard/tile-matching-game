@@ -6,6 +6,15 @@
 
     <script src="/js/jquery-3.3.1.min.js"></script>
     <script>
+        let token = "";
+        $.ajax({
+            url: "getToken",
+            sync: false,
+            success: (result) => {
+                token = result;
+                console.log(token);
+            }
+        });
         let genMap = function (map) {
             // console.log(map);
             map = $.parseJSON(map);
@@ -53,6 +62,20 @@
             }
         }
 
+        let testQuery = function () {
+            console.log("testQuery" + token);
+            $.ajax({
+                url: "/testQuery",
+                data: {
+                    remoteToken: token
+                },
+                type: "GET",
+                success: () => {
+                    console.log("query ok");
+                }
+            })
+        }
+
         window.onload = () => {
             $.ajax({
                 url: "/getMap",
@@ -60,10 +83,16 @@
                 success: genMap
             });
 
+            let testButton = document.getElementById("testButton");
+            testButton.onclick = testQuery;
         }
     </script>
 </head>
 <body>
     <div id = "divGround"></div>
+
+    <div id = "divTest">
+        <button type="button" id = "testButton" value = "test"></button>
+    </div>
 </body>
 </html>

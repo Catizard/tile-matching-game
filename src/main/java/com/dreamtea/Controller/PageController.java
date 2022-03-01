@@ -34,9 +34,9 @@ public class PageController {
         return "login";
     }
 
-    @GetMapping("/room")
-    public String roomPage() {
-        return "room";
+    @GetMapping("/roomselect")
+    public String roomSelectPage() {
+        return "roomselect";
     }
 
     @PostMapping("/login")
@@ -46,9 +46,9 @@ public class PageController {
         if(user != null) {
             //TODO change user's login state and automatically remove it when user closed the window
             String token = (String) redisService.get("name-" + user.getUserName());
-            if(token == null) {
-                return "redirect:/login";
-            }
+//            if(token == null) {
+//                return "redirect:/login";
+//            }
             /*
             TODO
             此处有一个比较严重的问题:
@@ -70,10 +70,16 @@ public class PageController {
 //            response.addHeader("Authorization", token);
 //            System.out.println(response.getHeader("Authorization"));
             request.getSession().setAttribute("token", token);
-            return "redirect:/room";
+            return "redirect:/roomselect";
         } else {
 //            model.addAttribute("login_msg", "incorrect credentials");
             return "redirect:/login";
         }
+    }
+
+    @GetMapping("/chatroom")
+    public String roomPage(@RequestParam("roomId") int roomId) {
+        System.out.println(roomId);
+        return "chatroom";
     }
 }

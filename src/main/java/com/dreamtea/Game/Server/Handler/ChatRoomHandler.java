@@ -8,9 +8,7 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.concurrent.GlobalEventExecutor;
-import org.springframework.stereotype.Component;
 
-@Component
 @ChannelHandler.Sharable
 public class ChatRoomHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 

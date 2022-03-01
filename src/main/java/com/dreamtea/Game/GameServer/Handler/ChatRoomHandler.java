@@ -11,7 +11,6 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 
 @ChannelHandler.Sharable
 public class ChatRoomHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
-
     private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     @Override

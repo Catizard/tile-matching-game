@@ -14,7 +14,7 @@ let getToken = function() {
     let token;
     $.ajax({
         url: "getToken",
-        sync: false,
+        async: false,
         success: (result) => {
             token = result;
             console.log(token);
@@ -28,7 +28,7 @@ let getRoomList = function () {
     $.ajax({
         url: "/getRoomList",
         type: "GET",
-        sync: false,
+        async: false,
         success: (resultJSON) => {
             result = $.parseJSON(resultJSON);
             console.log(result);
@@ -39,15 +39,4 @@ let getRoomList = function () {
         }
     });
     return result;
-}
-
-let send = function(message) {
-    if(!window.WebSocket) {
-        return ;
-    }
-    if(socket.readyState == WebSocket.OPEN) {
-        socket.send(message);
-    } else {
-        alert("connection havent opened");
-    }
 }

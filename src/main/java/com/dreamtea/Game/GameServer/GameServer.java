@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 
 @Component("gameServer")
-public class Server {
+public class GameServer {
 
     @Autowired
     @Qualifier("serverBootstrapList")

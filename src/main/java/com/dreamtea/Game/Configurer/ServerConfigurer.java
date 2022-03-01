@@ -59,7 +59,6 @@ public class ServerConfigurer {
                     protected void initChannel(NioSocketChannel ch) throws Exception {
                         ChannelPipeline pip = ch.pipeline();
                         pip.addLast(new HttpServerCodec());
-
                         pip.addLast(new ChunkedWriteHandler());
                         pip.addLast(new HttpObjectAggregator(1048576));
                         pip.addLast(new WebSocketServerProtocolHandler("/websocket"));

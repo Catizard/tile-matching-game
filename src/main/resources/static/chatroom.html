@@ -4,31 +4,82 @@
     <meta charset="UTF-8">
     <title>Whatever</title>
 
+    <script src="/js/jquery-3.3.1.min.js"></script>
     <script src = "/js/utils.js"></script>
     <script>
-        let socket;
+        let token = getToken();
+        let roomId = getRequestParam("roomId");
+
+        let send = function(message) {
+            if(!window.WebSocket) {
+                return ;
+            }
+            if(gamesocket.readyState == WebSocket.OPEN) {
+                gamesocket.send(message);
+            } else {
+                alert("connection havent opened");
+            }
+        }
+
+        let gamesocket, roomsocket;
+
         window.onload = () => {
             if(window.WebSocket) {
-                let port = 8180 + parseInt(getRequestParam("roomId")) - 1;
+                let port = 8180 + parseInt(roomId) - 1;
                 console.log(port);
 
-                let socket = new WebSocket("ws://localhost:" + port + "/websocket");
-                socket.onmessage = (ev) => {
+                gamesocket = new WebSocket("ws://localhost:" + port + "/websocket");
+
+
+                gamesocket.onmessage = (ev) => {
                     let ta = document.getElementById("responseText");
                     ta.value += "\n" + ev.data;
                 }
-                socket.onopen = (ev) => {
+                gamesocket.onopen = (ev) => {
                     let ta = document.getElementById("responseText");
                     ta.value = "connection started";
                 }
-                socket.onclose = (ev) => {
+                gamesocket.onclose = (ev) => {
                     let ta = document.getElementById("responseText");
                     ta.value += "\n" + "connection closed";
                 }
+
+                roomsocket = new WebSocket("ws://localhost:8190" + "/websocket");
+                roomsocket.onopen = (ev) => {
+                    roomsocket.send("{remoteToken: " + token + ", type: \"LOGIN\", roomId: " + roomId + "}");
+                }
+
+                roomsocket.onclose = (ev) => {
+                    roomsocket.send("{remoteToken: " + token + ", type: \"LOGOUT\", roomId: " + roomId + "}");
+                }
+
+                /*
+                TODO
+                在这里如果直接向前台发送消息,会无法接收,因为websocket尚且还没有建立起来.
+                在之后应该完善成在这里阻塞,前台首先显示一个loading....
+                直到建立完成之后发送一条确认信息到前台接受之后再回信 loginMessage.
+                if(roomsocket.readyState == WebSocket.OPEN) {
+                    roomsocket.send(loginMessage);
+                }
+                 */
             } else {
                 alert("Explorer version is too low!");
             }
         }
+
+        $(document).ready(() => {
+            window.onbeforeunload = function (e) {
+                // e = e || window.event
+                //
+                // // 兼容IE8和Firefox 4之前的版本
+                // if (e) {
+                //     e.returnValue = '关闭提示'
+                // }
+                roomsocket.send("{remoteToken: " + token + ", type: \"LOGOUT\", roomId: " + roomId + "}");
+                // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
+                // return '关闭提示'
+            }
+        });
     </script>
 </head>
 <body>

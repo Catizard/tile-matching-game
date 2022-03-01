@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org//dtd//mybatis-3-mapper.dtd">
 
-<mapper namespace="com.dreamtea.Mapper.UserMapper">
+<mapper namespace="com.dreamtea.Boot.Mapper.UserMapper">
     <!-- User result map   -->
     <resultMap id="UserResultMap" type="User">
         <result column="user_name" property="userName"/>

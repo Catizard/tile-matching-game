@@ -3,27 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Whatever</title>
+
+    <script src = "/js/utils.js"></script>
     <script>
-
-        let getRequestParam = function(name) {
-            let s = window.location.search.substring(1);
-            let values = s.split("&");
-            for(let i = 0;i < values.length;++i) {
-                let kv = values[i].split("=");
-                if(kv[0] === name) {
-                    return kv[1];
-                }
-            }
-            return null;
-        }
         let socket;
-
         window.onload = () => {
             if(window.WebSocket) {
                 let port = 8180 + parseInt(getRequestParam("roomId")) - 1;
                 console.log(port);
 
-                socket = new WebSocket("ws://localhost:" + port + "/websocket");
+                let socket = new WebSocket("ws://localhost:" + port + "/websocket");
                 socket.onmessage = (ev) => {
                     let ta = document.getElementById("responseText");
                     ta.value += "\n" + ev.data;
@@ -38,17 +27,6 @@
                 }
             } else {
                 alert("Explorer version is too low!");
-            }
-        }
-
-        function send(message) {
-            if(!window.WebSocket) {
-                return ;
-            }
-            if(socket.readyState == WebSocket.OPEN) {
-                socket.send(message);
-            } else {
-                alert("connection havent opened");
             }
         }
     </script>

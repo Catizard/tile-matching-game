@@ -5,6 +5,6 @@
 
 <configuration>
     <typeAliases>
-        <typeAlias type="com.dreamtea.Domain.User" alias="User"/>
+        <typeAlias type="com.dreamtea.Boot.Domain.User" alias="User"/>
     </typeAliases>
 </configuration>

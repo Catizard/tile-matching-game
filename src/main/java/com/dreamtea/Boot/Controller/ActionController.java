@@ -2,7 +2,7 @@ package com.dreamtea.Boot.Controller;
 
 import com.dreamtea.Boot.Domain.World;
 import com.dreamtea.Boot.Service.RedisService;
-import com.dreamtea.Boot.Service.RoomService;
+import com.dreamtea.Game.GroundServer.Service.RoomService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;

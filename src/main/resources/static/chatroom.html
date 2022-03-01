@@ -44,14 +44,16 @@
                     ta.value += "\n" + "connection closed";
                 }
 
-                roomsocket = new WebSocket("ws://localhost:8190" + "/websocket");
+                roomsocket = new WebSocket("ws://localhost:8190/websocket");
                 roomsocket.onopen = (ev) => {
-                    roomsocket.send("{remoteToken: " + token + ", type: \"LOGIN\", roomId: " + roomId + "}");
+                    let loginmessage = `{"remoteToken": "` + token + `", "type": "LOGIN", "roomId": ` + roomId + `}`;
+                    roomsocket.send(loginmessage);
                 }
 
-                roomsocket.onclose = (ev) => {
-                    roomsocket.send("{remoteToken: " + token + ", type: \"LOGOUT\", roomId: " + roomId + "}");
-                }
+                // roomsocket.onclose = (ev) => {
+                //     let logoutmessage = `{"remoteToken": "` + token + `", "type": "LOGOUT", "roomId": ` + roomId + `}`;
+                //     roomsocket.send(logoutmessage);
+                // }
 
                 /*
                 TODO
@@ -67,17 +69,19 @@
             }
         }
 
+        //TODO 我不知道为什么这里要写 ready 才会生效,而且似乎有时我注销掉 onclose 事件时这里并不会发送信息,无法复现
         $(document).ready(() => {
             window.onbeforeunload = function (e) {
                 // e = e || window.event
                 //
                 // // 兼容IE8和Firefox 4之前的版本
                 // if (e) {
-                //     e.returnValue = '关闭提示'
+                //     e.returnValue = `关闭提示`
                 // }
-                roomsocket.send("{remoteToken: " + token + ", type: \"LOGOUT\", roomId: " + roomId + "}");
+                let logoutmessage = `{"remoteToken": "` + token + `", "type": "LOGOUT", "roomId": ` + roomId + `}`;
+                roomsocket.send(logoutmessage);
                 // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
-                // return '关闭提示'
+                // return `关闭提示`
             }
         });
     </script>

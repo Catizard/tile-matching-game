@@ -7,11 +7,14 @@
     <script src="/js/jquery-3.3.1.min.js"></script>
     <script src="/js/utils.js"></script>
     <script>
-        let token = getToken();
-        // let roomsocket = new WebSocket("ws://localhost:8190/websocket");
-        // roomsocket.onclose = () => {
-        //     roomsocket.send("{remoteToken: " + token + ", type: \"login\", roomId: " + roomId + "};");
-        // }
+        let token = getToken(),roomNum = [];
+        let roomsocket = new WebSocket("ws://localhost:8190/websocket");
+
+        roomsocket.onmessage = (ev) => {
+            console.log(ev.data);
+            roomNum = getRoomList();
+        }
+
         window.onload = () => {
             let divGround = document.getElementById("divGround");
             for (let i = 0; i < 10; ++i) {
@@ -21,13 +24,13 @@
                 let buttonRoom = document.getElementById("buttonRoom" + (i + 1));
                 buttonRoom.innerHTML += "<span id = textRoom" + (i + 1) + "> room" + (i + 1) + " 0 / 6</span>"
                 buttonRoom.onclick = () => {
-                    // roomId = (i + 1);
+                    if(roomNum[i] === 6) return ;
                     window.location = location.origin + "/chatroom?roomId=" + (i + 1);
                 }
             }
 
-            getRoomList();
-
+            roomNum = getRoomList();
+            console.log(roomNum);
         }
     </script>
 </head>

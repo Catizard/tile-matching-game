@@ -1,5 +1,6 @@
 package com.dreamtea.Game.GroundServer.Handler;
 
+import com.dreamtea.Boot.Service.RedisService;
 import com.dreamtea.Game.GroundServer.Service.RoomService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,6 +20,9 @@ import org.springframework.stereotype.Component;
 public class GroundHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
     private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+
+    @Autowired
+    private RedisService redisService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -49,10 +53,11 @@ public class GroundHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         --numRoomId;
 
         //TODO 此处需要验证 remoteToken 的合法性
+        String name = ((String) redisService.get(remoteToken)).split("-")[1];
         if("LOGIN".equals(type)) {
-            roomService.add(remoteToken, numRoomId);
+            roomService.add(name, numRoomId);
         } else {
-            roomService.del(remoteToken, numRoomId);
+            roomService.del(name, numRoomId);
         }
 
         for(Channel channel : channels) {

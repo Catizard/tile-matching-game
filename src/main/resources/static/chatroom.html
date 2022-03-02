@@ -10,6 +10,9 @@
         let token = getToken();
         let roomId = getRequestParam("roomId");
 
+        let loginmessage = `{"remoteToken": "` + token + `", "type": "LOGIN", "message": ` + roomId + `}`;
+        let logoutmessage = `{"remoteToken": "` + token + `", "type": "LOGOUT", "message": ` + roomId + `}`;
+
         let send = function(message) {
             if(!window.WebSocket) {
                 return ;
@@ -25,9 +28,6 @@
 
         window.onload = () => {
             if(window.WebSocket) {
-                let loginmessage = `{"remoteToken": "` + token + `", "type": "LOGIN", "message": ` + roomId + `}`;
-                let logoutmessage = `{"remoteToken": "` + token + `", "type": "LOGOUT", "message": ` + roomId + `}`;
-
                 let port = 8180 + parseInt(roomId) - 1;
                 console.log(port);
 
@@ -52,11 +52,6 @@
                     roomsocket.send(loginmessage);
                 }
 
-                // roomsocket.onclose = (ev) => {
-                //     let logoutmessage = `{"remoteToken": "` + token + `", "type": "LOGOUT", "roomId": ` + roomId + `}`;
-                //     roomsocket.send(logoutmessage);
-                // }
-
                 /*
                 TODO
                 在这里如果直接向前台发送消息,会无法接收,因为websocket尚且还没有建立起来.
@@ -71,21 +66,21 @@
             }
         }
 
-        //TODO 我不知道为什么这里要写 ready 才会生效,而且似乎有时我注销掉 onclose 事件时这里并不会发送信息,无法复现
-        $(document).ready(() => {
-            window.onbeforeunload = function (e) {
-                // e = e || window.event
-                //
-                // // 兼容IE8和Firefox 4之前的版本
-                // if (e) {
-                //     e.returnValue = `关闭提示`
-                // }
-                gamesocket.send(logoutmessage);
-                roomsocket.send(logoutmessage);
-                // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
-                // return `关闭提示`
-            }
-        });
+        /*
+        TODO
+         onbeforeunloadshi事件某些时候不会触发 原因未知
+         根据 stackoverflow[https://stackoverflow.com/questions/27617019/onbeforeunload-not-working] 的说法
+         首先这个函数需要一个返回值，其次要写成 addListener 的形式
+         */
+        window.addEventListener('beforeunload', () => {
+            gamesocket.send(logoutmessage);
+            roomsocket.send(logoutmessage);
+        },false);
+
+        // $(window).on('beforeunload',() => {
+        //     gamesocket.send(logoutmessage);
+        //     roomsocket.send(logoutmessage);
+        // });
     </script>
 </head>
 <body>

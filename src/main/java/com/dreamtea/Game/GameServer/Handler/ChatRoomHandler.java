@@ -29,6 +29,7 @@ public class ChatRoomHandler extends SimpleChannelInboundHandler<TextWebSocketFr
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame frame) throws Exception {
         String json = frame.text();
+        System.out.println(json);
         Channel curChannel = ctx.channel();
         JsonNode jsonNode = objectMapper.readTree(json);
 

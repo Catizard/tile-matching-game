@@ -15,7 +15,7 @@
                 return ;
             }
             if(gamesocket.readyState == WebSocket.OPEN) {
-                gamesocket.send(message);
+                gamesocket.send(`{"remoteToken": "` + token + `", "type": "MESSAGE", "message": "` + message + `"}`);
             } else {
                 alert("connection havent opened");
             }
@@ -25,11 +25,13 @@
 
         window.onload = () => {
             if(window.WebSocket) {
+                let loginmessage = `{"remoteToken": "` + token + `", "type": "LOGIN", "message": ` + roomId + `}`;
+                let logoutmessage = `{"remoteToken": "` + token + `", "type": "LOGOUT", "message": ` + roomId + `}`;
+
                 let port = 8180 + parseInt(roomId) - 1;
                 console.log(port);
 
                 gamesocket = new WebSocket("ws://localhost:" + port + "/websocket");
-
 
                 gamesocket.onmessage = (ev) => {
                     let ta = document.getElementById("responseText");
@@ -38,6 +40,7 @@
                 gamesocket.onopen = (ev) => {
                     let ta = document.getElementById("responseText");
                     ta.value = "connection started";
+                    gamesocket.send(loginmessage);
                 }
                 gamesocket.onclose = (ev) => {
                     let ta = document.getElementById("responseText");
@@ -46,7 +49,6 @@
 
                 roomsocket = new WebSocket("ws://localhost:8190/websocket");
                 roomsocket.onopen = (ev) => {
-                    let loginmessage = `{"remoteToken": "` + token + `", "type": "LOGIN", "roomId": ` + roomId + `}`;
                     roomsocket.send(loginmessage);
                 }
 
@@ -78,7 +80,7 @@
                 // if (e) {
                 //     e.returnValue = `关闭提示`
                 // }
-                let logoutmessage = `{"remoteToken": "` + token + `", "type": "LOGOUT", "roomId": ` + roomId + `}`;
+                gamesocket.send(logoutmessage);
                 roomsocket.send(logoutmessage);
                 // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
                 // return `关闭提示`

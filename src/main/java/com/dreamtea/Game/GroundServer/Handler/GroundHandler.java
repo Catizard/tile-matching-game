@@ -41,7 +41,7 @@ public class GroundHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         JsonNode jsonNode = objectMapper.readTree(json);
         String remoteToken = jsonNode.get("remoteToken").asText();
         String type = jsonNode.get("type").asText();
-        String roomId = jsonNode.get("roomId").asText();
+        String roomId = jsonNode.get("message").asText();
 
         if(remoteToken == null || type == null || roomId == null) {
             throw new IllegalArgumentException("message is not exist");
@@ -56,9 +56,9 @@ public class GroundHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         String name = ((String) redisService.get(remoteToken)).split("-")[1];
         if("LOGIN".equals(type)) {
             roomService.add(name, numRoomId);
-        } else {
+        } else if("LOGOUT".equals(type)) {
             roomService.del(name, numRoomId);
-        }
+        } //抛弃 type 是 MESSAGE 的信息
 
         for(Channel channel : channels) {
             channel.writeAndFlush(new TextWebSocketFrame("refresh"));

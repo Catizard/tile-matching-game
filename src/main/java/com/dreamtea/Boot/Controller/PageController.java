@@ -69,8 +69,8 @@ public class PageController {
 //            response.addCookie(cookie_token);
 //            response.addHeader("Authorization", token);
 //            System.out.println(response.getHeader("Authorization"));
-            String addr = request.getRemoteAddr();
-            redisService.set("addr-" + addr, "name-" + user.getUserName());
+//            String addr = request.getRemoteAddr();
+//            redisService.set("addr-" + addr, "name-" + user.getUserName());
             request.getSession().setAttribute("token", token);
             return "redirect:/roomselect";
         } else {

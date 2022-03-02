@@ -17,26 +17,7 @@ let getToken = function() {
         async: false,
         success: (result) => {
             token = result;
-            console.log(token);
         }
     });
     return token;
-}
-
-let getRoomList = function () {
-    let result = [];
-    $.ajax({
-        url: "/getRoomList",
-        type: "GET",
-        async: false,
-        success: (resultJSON) => {
-            result = $.parseJSON(resultJSON);
-            console.log(result);
-            for (let i = 0; i < 10; ++i) {
-                let textRoom = document.getElementById("textRoom" + (i + 1));
-                textRoom.innerHTML = "room" + (i + 1) + " " + result[i].length + "/6";
-            }
-        }
-    });
-    return result;
 }

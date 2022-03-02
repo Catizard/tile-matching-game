@@ -8,11 +8,29 @@
     <script src="/js/utils.js"></script>
     <script>
         let token = getToken(),roomNum = [];
+
+        let getRoomList = () => {
+            $.ajax({
+                url: "getRoomList",
+                type: "GET",
+                async: false,
+                success: (resultJSON) => {
+                    let jsonObject = $.parseJSON(resultJSON);
+                    console.log(jsonObject);
+                    for (let i = 0; i < 10; ++i) {
+                        let textRoom = document.getElementById("textRoom" + (i + 1));
+                        roomNum[i] = jsonObject[i].length;
+                        textRoom.innerHTML = "room" + (i + 1) + " " + roomNum[i] + "/6";
+                    }
+                }
+            })
+        }
+
         let roomsocket = new WebSocket("ws://localhost:8190/websocket");
 
         roomsocket.onmessage = (ev) => {
-            console.log(ev.data);
-            roomNum = getRoomList();
+            getRoomList();
+            console.log(roomNum);
         }
 
         window.onload = () => {
@@ -28,8 +46,7 @@
                     window.location = location.origin + "/chatroom?roomId=" + (i + 1);
                 }
             }
-
-            roomNum = getRoomList();
+            getRoomList();
             console.log(roomNum);
         }
     </script>

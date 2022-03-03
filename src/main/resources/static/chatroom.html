@@ -75,6 +75,12 @@
             } else {
                 alert("Explorer version is too low!");
             }
+
+            $.ajax({
+                url: "/getMap",
+                async: false,
+                success: genMap
+            });
         }
 
         /*
@@ -92,6 +98,78 @@
         //     gamesocket.send(logoutmessage);
         //     roomsocket.send(logoutmessage);
         // });
+
+        let genMap = function (map) {
+            // console.log(map);
+            map = $.parseJSON(map);
+            // console.log(map);
+            //gen the basic map
+            let divGround = document.getElementById("divGround");
+            for(let i = 0;i < 10;++i) {
+                divGround.innerHTML += "<div id = divInner" + (i + 1) + "></div>";
+            }
+            for(let i = 0;i < 10;++i) {
+                let divInner = document.getElementById("divInner" + (i + 1));
+                for(let j = 0;j < 10;++j) {
+                    let num = i * 10 + j;
+                    let imgUrl = "img/sprBlock" + map[num] + ".png";
+                    divInner.innerHTML += "<button id = \"buttonBlock" + num + "\" style=\"background: url(" + imgUrl + "); width: 64px; height: 64px;\"></button>"
+                }
+            }
+            //bind the click event
+            for(let i = 0;i < 10;++i) {
+                for(let j = 0;j < 10;++j) {
+                    let num = i * 10 + j;
+                    let buttonBlock = document.getElementById("buttonBlock" + num);
+                    buttonBlock.onclick = () => {
+                        console.log(buttonBlock.style.background);
+                        if(buttonBlock.style.background === "url(\"img/sprBlock0.png\")") {
+                            return ;
+                        }
+                        $.ajax({
+                            url: "/addBlock",
+                            type: "GET",
+                            data: {
+                                blockId: num
+                            },
+                            success: (result) => {
+                                result = $.parseJSON(result);
+                                if(result.length === 2) {
+                                    console.log(result);
+                                    (document.getElementById("buttonBlock" + result[0])).style.background = "url(\"img/sprBlock0.png\")";
+                                    (document.getElementById("buttonBlock" + result[1])).style.background = "url(\"img/sprBlock0.png\")";
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
+        // let testQuery = function () {
+        //     console.log("testQuery" + token);
+        //     $.ajax({
+        //         url: "/testQuery",
+        //         data: {
+        //             remoteToken: token
+        //         },
+        //         type: "GET",
+        //         success: () => {
+        //             console.log("query ok");
+        //         }
+        //     })
+        // }
+
+        // window.onload = () => {
+        //     $.ajax({
+        //         url: "/getMap",
+        //         async: false,
+        //         success: genMap
+        //     });
+        //
+        //     // let testButton = document.getElementById("testButton");
+        //     // testButton.onclick = testQuery;
+        // }
     </script>
 </head>
 <body>
@@ -107,17 +185,7 @@
             <div class="col-md-10">
                 <!-- left panel -->
                 <div class="container-fluid">
-                    <div class="row">
-                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
-                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
-                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
-                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
-                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
-                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
-                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
-                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
-                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
-                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
+                    <div class="row" id="divGround">
                     </div>
                 </div>
             </div>

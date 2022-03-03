@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Whatever</title>
 
+    <link href="css/bootstrap.min.css" rel="stylesheet">
     <script src="/js/jquery-3.3.1.min.js"></script>
     <script src = "/js/utils.js"></script>
     <script>
@@ -22,6 +23,16 @@
             } else {
                 alert("connection havent opened");
             }
+        }
+
+        let sendmessage = () => {
+            let textMessage = document.getElementById("textMessage");
+            let message = textMessage.value;
+            if(message === "") {
+                return ;
+            }
+            console.log(message);
+            send(message);
         }
 
         let gamesocket, roomsocket;
@@ -85,12 +96,41 @@
 </head>
 <body>
 
-<form onsubmit="return false;">
-    <h3> Chat Room </h3>
-    <textarea id = "responseText" style = "width: 500px; height: 300px;"></textarea>
-    <br>
-    <input type = "text" name = "message" style = "width: 300px" value = "">
-    <input type = "button" value = "send" onclick = "send(this.form.message.value)">
-</form>
+<!--<form onsubmit="return false;">-->
+<!--    <h3> Chat Room </h3>-->
+<!--    <textarea id = "responseText" style = "width: 500px; height: 300px;"></textarea>-->
+<!--    <br>-->
+<!--    <input type = "text" name = "message" style = "width: 300px" value = "">-->
+<!--    <input type = "button" value = "send" onclick = "send(this.form.message.value)">-->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-10">
+                <!-- left panel -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
+                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
+                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
+                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
+                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
+                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
+                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
+                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
+                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
+                        <button style="background: url(img/sprBlock10.png); height: 64px; width: 64px;"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <!-- left panel -->
+                <div style="display: inline-flex; flex-direction: column; height: 100vh;">
+                    <textarea id="responseText" style="flex: 1"></textarea>
+                    <input type = "text" name = "message" id="textMessage" value = "">
+                    <input type = "button" value = "send" onclick = "sendmessage()">
+                </div>
+            </div>
+        </div>
+    </div>
+<!--</form>-->
 </body>
 </html>

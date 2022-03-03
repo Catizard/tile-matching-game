@@ -7,7 +7,7 @@
     <script src="/js/jquery-3.3.1.min.js"></script>
     <script src="/js/utils.js"></script>
     <script>
-        let token = getToken(),roomNum = [];
+        let token = getToken(),roomNum = [],roomStatus = [];
 
         let getRoomList = () => {
             $.ajax({
@@ -16,20 +16,45 @@
                 async: false,
                 success: (resultJSON) => {
                     let jsonObject = $.parseJSON(resultJSON);
-                    console.log(jsonObject);
-                    for (let i = 0; i < 10; ++i) {
-                        let textRoom = document.getElementById("textRoom" + (i + 1));
+                    for (let i = 0;i < 10;++i) {
                         roomNum[i] = jsonObject[i].length;
-                        textRoom.innerHTML = "room" + (i + 1) + " " + roomNum[i] + "/6";
                     }
+                }
+            });
+        }
+
+        let getRoomStatusList = () => {
+            $.ajax({
+                url: "getRoomStatusList",
+                type: "GET",
+                async: false,
+                success: (resultJSON) => {
+                    roomStatus = $.parseJSON(resultJSON);
                 }
             })
         }
 
+        let refreshRoomList = () => {
+            getRoomList();
+            getRoomStatusList();
+            for (let i = 0;i < 10;++i) {
+                let textRoom = document.getElementById("textRoom" + (i + 1));
+                textRoom.innerHTML = "room" + (i + 1) + " " + roomNum[i] + "/6";
+                let buttonRoom = document.getElementById("buttonRoom" + (i + 1));
+                if(roomStatus[i] == true) {
+                    buttonRoom.style.backgroundColor = "#ff0000";
+                } else {
+                    buttonRoom.style.backgroundColor = "#00ff00"
+                }
+            }
+        }
+
+
+
         let roomsocket = new WebSocket("ws://localhost:8190/websocket");
 
         roomsocket.onmessage = (ev) => {
-            getRoomList();
+            refreshRoomList();
             console.log(roomNum);
         }
 
@@ -46,12 +71,12 @@
                     window.location = location.origin + "/chatroom?roomId=" + (i + 1);
                 }
             }
-            getRoomList();
+            refreshRoomList();
             console.log(roomNum);
         }
     </script>
 </head>
 <body>
-<div id="divGround"></div>
+<div id="divGround" ></div>
 </body>
 </html>

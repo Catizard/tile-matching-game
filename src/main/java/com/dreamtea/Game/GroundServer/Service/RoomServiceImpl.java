@@ -16,11 +16,20 @@ public class RoomServiceImpl implements RoomService {
     ArrayList<ArrayList<String>> roomList;
 
     @Autowired
+    @Qualifier("roomStatusList")
+    ArrayList<Boolean> roomStatusList;
+
+    @Autowired
     ObjectMapper objectMapper;
 
     @Override
     public ArrayList<ArrayList<String>> getRoomList() {
         return roomList;
+    }
+
+    @Override
+    public ArrayList<Boolean> getRoomStatusList() {
+        return roomStatusList;
     }
 
     @Override

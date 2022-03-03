@@ -69,4 +69,9 @@ public class ActionController {
     public String getRoomList() throws JsonProcessingException {
         return objectMapper.writeValueAsString(roomService.getRoomList());
     }
+
+    @GetMapping("/getRoomStatusList")
+    public String getRoomStatusList() throws JsonProcessingException {
+        return objectMapper.writeValueAsString(roomService.getRoomStatusList());
+    }
 }

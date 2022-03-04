@@ -41,6 +41,7 @@ public class ChatRoomHandler extends SimpleChannelInboundHandler<TextWebSocketFr
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame frame) throws Exception {
         String json = frame.text();
+        System.out.println(json);
         JsonNode jsonNode = objectMapper.readTree(json);
 
         String remoteToken = jsonNode.get("remoteToken").asText();
@@ -85,6 +86,8 @@ public class ChatRoomHandler extends SimpleChannelInboundHandler<TextWebSocketFr
                 --roomId;
                 long timestamp = Long.parseLong(jsonNode.get("timestamp").asText());
                 roomService.delReadyAll(roomId);
+                mapMessage.put("type","GAMEOVER");
+                mapMessage.put("message",((String) redisService.get(remoteToken)).split("-")[1]);
                 break;
         }
 

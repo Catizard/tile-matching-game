@@ -5,7 +5,7 @@
     <title>Whatever</title>
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src = "/js/jquery-3.3.1.min.js"></script>
     <script src = "/js/utils.js"></script>
     <script>
         let token = getToken();
@@ -13,76 +13,9 @@
 
         let loginmessage = `{"remoteToken": "` + token + `", "type": "LOGIN", "message": ` + roomId + `}`;
         let logoutmessage = `{"remoteToken": "` + token + `", "type": "LOGOUT", "message": ` + roomId + `}`;
+        let readymessage = `{"remoteToken": "` + token + `", "type": "READY", "message": ` + roomId + `}`;
 
-        let send = function(message) {
-            if(!window.WebSocket) {
-                return ;
-            }
-            if(gamesocket.readyState == WebSocket.OPEN) {
-                gamesocket.send(`{"remoteToken": "` + token + `", "type": "MESSAGE", "message": "` + message + `"}`);
-            } else {
-                alert("connection havent opened");
-            }
-        }
-
-        let sendmessage = () => {
-            let textMessage = document.getElementById("textMessage");
-            let message = textMessage.value;
-            if(message === "") {
-                return ;
-            }
-            console.log(message);
-            send(message);
-        }
-
-        let gamesocket, roomsocket;
-
-        window.onload = () => {
-            if(window.WebSocket) {
-                let port = 8180 + parseInt(roomId) - 1;
-                console.log(port);
-
-                gamesocket = new WebSocket("ws://localhost:" + port + "/websocket");
-
-                gamesocket.onmessage = (ev) => {
-                    let ta = document.getElementById("responseText");
-                    ta.value += "\n" + ev.data;
-                }
-                gamesocket.onopen = (ev) => {
-                    let ta = document.getElementById("responseText");
-                    ta.value = "connection started";
-                    gamesocket.send(loginmessage);
-                }
-                gamesocket.onclose = (ev) => {
-                    let ta = document.getElementById("responseText");
-                    ta.value += "\n" + "connection closed";
-                }
-
-                roomsocket = new WebSocket("ws://localhost:8190/websocket");
-                roomsocket.onopen = (ev) => {
-                    roomsocket.send(loginmessage);
-                }
-            } else {
-                alert("Explorer version is too low!");
-            }
-
-            $.ajax({
-                url: "/getMap",
-                async: false,
-                success: genMap
-            });
-        }
-
-        /*
-        TODO
-         onbeforeunloadshi事件某些时候不会触发 原因未知
-         根据 stackoverflow[https://stackoverflow.com/questions/27617019/onbeforeunload-not-working] 的说法
-         首先这个函数需要一个返回值，其次要写成 addListener 的形式
-        */
-        window.addEventListener('beforeunload', () => {
-            gamesocket.send(logoutmessage);
-            roomsocket.send(logoutmessage);
-        },false);
+        let selfReady = 0;
 
         let genMap = function (map) {
             // console.log(map);
@@ -130,6 +63,96 @@
                 }
             }
         }
+        let send = function(message) {
+            if(!window.WebSocket) {
+                return ;
+            }
+            if(gamesocket.readyState == WebSocket.OPEN) {
+                gamesocket.send(`{"remoteToken": "` + token + `", "type": "MESSAGE", "message": "` + message + `"}`);
+            } else {
+                alert("connection havent opened");
+            }
+        }
+        let sendmessage = () => {
+            let textMessage = document.getElementById("textMessage");
+            let message = textMessage.value;
+            if(message === "") {
+                return ;
+            }
+            console.log(message);
+            send(message);
+        }
+        let sendready = () => {
+            if(selfReady != 0) {
+                return ;
+            }
+            $.ajax({
+                url: "getReady",
+                data: {
+                    "roomId": roomId
+                },
+                type: "GET",
+                async: false,
+                success: (result) => {
+                    if(result == "READY") {
+                        gamesocket.send(readymessage);
+                        roomsocket.send(readymessage);
+                    }
+                    selfReady = 1;
+                }
+            })
+        }
+
+        let gamesocket, roomsocket;
+
+        window.onload = () => {
+            if(window.WebSocket) {
+                let port = 8180 + parseInt(roomId) - 1;
+                console.log(port);
+
+                gamesocket = new WebSocket("ws://localhost:" + port + "/websocket");
+
+                gamesocket.onmessage = (ev) => {
+                    let ta = document.getElementById("responseText");
+                    let message = $.parseJSON(ev.data);
+                    //TODO 调整为JSON格式
+                    if(message["type"] == "MAP") {
+                        genMap(message["message"]);
+                    } else {
+                        ta.value += "\n" + message["message"];
+                    }
+                }
+                gamesocket.onopen = (ev) => {
+                    let ta = document.getElementById("responseText");
+                    ta.value = "connection started";
+                    gamesocket.send(loginmessage);
+                }
+                gamesocket.onclose = (ev) => {
+                    let ta = document.getElementById("responseText");
+                    ta.value += "\n" + "connection closed";
+                }
+
+                roomsocket = new WebSocket("ws://localhost:8190/websocket");
+                roomsocket.onopen = (ev) => {
+                    roomsocket.send(loginmessage);
+                }
+            } else {
+                alert("Explorer version is too low!");
+            }
+        }
+
+        /*
+        TODO
+         onbeforeunloadshi事件某些时候不会触发 原因未知
+         根据 stackoverflow[https://stackoverflow.com/questions/27617019/onbeforeunload-not-working] 的说法
+         首先这个函数需要一个返回值，其次要写成 addListener 的形式
+        */
+        window.addEventListener('beforeunload', () => {
+            gamesocket.send(logoutmessage);
+            roomsocket.send(logoutmessage);
+        },false);
+
+
     </script>
 </head>
 <body>

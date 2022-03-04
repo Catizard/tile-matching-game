@@ -58,8 +58,12 @@ public class GroundHandler extends SimpleChannelInboundHandler<TextWebSocketFram
             roomService.add(name, numRoomId);
         } else if("LOGOUT".equals(type)) {
             roomService.del(name, numRoomId);
-        } //抛弃 type 是 MESSAGE 的信息
-
+        } else if("READY".equals(type)) {
+            roomService.setRunning(numRoomId);
+        } else if("GAMEOVER".equals(numRoomId)) {
+            roomService.setOver(numRoomId);
+        }
+        //抛弃 type 是 MESSAGE 的信息
         for(Channel channel : channels) {
             channel.writeAndFlush(new TextWebSocketFrame("refresh"));
         }

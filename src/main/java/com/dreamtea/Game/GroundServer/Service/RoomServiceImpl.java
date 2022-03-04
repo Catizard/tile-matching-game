@@ -20,6 +20,10 @@ public class RoomServiceImpl implements RoomService {
     ArrayList<Boolean> roomStatusList;
 
     @Autowired
+    @Qualifier("roomReadyCountList")
+    ArrayList<Integer> roomReadyCountList;
+
+    @Autowired
     ObjectMapper objectMapper;
 
     @Override
@@ -40,5 +44,20 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void del(String token, int roomId) {
         roomList.get(roomId).remove(token);
+    }
+
+    @Override
+    public ArrayList<Integer> getRoomReadyCountList() {
+        return roomReadyCountList;
+    }
+
+    @Override
+    public void setRunning(int roomId) {
+        roomStatusList.set(roomId, true);
+    }
+
+    @Override
+    public void setOver(int roomId) {
+        roomStatusList.set(roomId, false);
     }
 }

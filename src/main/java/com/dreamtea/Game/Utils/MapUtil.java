@@ -28,7 +28,6 @@ public class MapUtil {
                 j = 0;
             }
         }
-//        System.out.println("the total is:" + all);
     }
 
     public static ArrayList<Integer> readMap(String fileName) {
@@ -55,8 +54,6 @@ public class MapUtil {
             e.printStackTrace();
         }
 
-//        printMap(defaultMap);
-
         return defaultMap;
     }
 
@@ -74,8 +71,6 @@ public class MapUtil {
 
         all /= 2;
 
-//        System.out.println("pairs = " + all);
-
         ArrayList<Integer> waitToUse = new ArrayList<>();
         int loop = all / 10, remain = all % 10;
         for (int i = 0;i < loop;++i) {
@@ -88,8 +83,6 @@ public class MapUtil {
             waitToUse.add(i);
             waitToUse.add(i);
         }
-
-//        System.out.println(waitToUse.size());
 
         //TODO: gen random
         Random gen = new Random();
@@ -106,8 +99,6 @@ public class MapUtil {
             }
             defaultMap.set(i, waitToUse.get(j++));
         }
-
-//        printMap(defaultMap);
 
         return defaultMap;
     }

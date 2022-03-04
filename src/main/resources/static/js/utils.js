@@ -21,3 +21,4 @@ let getToken = function() {
     });
     return token;
 }
+

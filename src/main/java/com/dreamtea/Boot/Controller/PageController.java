@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,12 +21,6 @@ public class PageController {
 
     @Autowired
     RedisService redisService;
-
-    @RequestMapping("/game")
-    public String gamePage(HttpServletRequest request, HttpServletResponse response) {
-        String token = (String) request.getSession().getAttribute("token");
-        return "game";
-    }
 
     @GetMapping({"/","/login"})
     public String loginPage() {
@@ -63,14 +56,6 @@ public class PageController {
             目前的做法是直接把内容写入到一个 session 中,并且在前台接收到这个 token
             之后在某些特殊的地方再进行身份验证
              */
-//            Cookie cookie_token = new Cookie("token", token);
-//            cookie_token.setMaxAge(30 * 24 * 60 * 60);
-//            cookie_token.setPath(request.getContextPath());
-//            response.addCookie(cookie_token);
-//            response.addHeader("Authorization", token);
-//            System.out.println(response.getHeader("Authorization"));
-//            String addr = request.getRemoteAddr();
-//            redisService.set("addr-" + addr, "name-" + user.getUserName());
             request.getSession().setAttribute("token", token);
             return "redirect:/roomselect";
         } else {

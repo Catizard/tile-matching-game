@@ -27,13 +27,6 @@ public class ActionController {
     @Autowired
     RoomService roomService;
 
-    @GetMapping("/getMap")
-    public String getMap() throws JsonProcessingException {
-        //TODO spilt first in this page and after
-        ArrayList<Integer> map = world.genMap("test.txt");
-        return objectMapper.writeValueAsString(map);
-    }
-
     @GetMapping("/addBlock")
     public String addBlock(@RequestParam("blockId") int id) throws JsonProcessingException {
         int prevInhand = world.getInhand();
@@ -44,27 +37,6 @@ public class ActionController {
         return "[" + id + "," + num + "]";
     }
 
-    @GetMapping("/getToken")
-    public String getToken(HttpServletRequest request) {
-        return (String) request.getSession().getAttribute("token");
-    }
-
-    @GetMapping("/testQuery")
-    public String testQuery(@RequestParam("remoteToken") String remoteToken) {
-        /*
-        TODO
-        增加一个拦截器拦截登录
-        由于房间列表页面和游戏页面还需要拆分,暂时放在这里
-         */
-        System.out.println(remoteToken);
-        String getName = (String) redisService.get(remoteToken);
-        System.out.println(getName);
-        if(getName != null) {
-            System.out.println(redisService.get(getName));
-        }
-        return "";
-    }
-
     @GetMapping("/getRoomList")
     public String getRoomList() throws JsonProcessingException {
         return objectMapper.writeValueAsString(roomService.getRoomList());
@@ -73,5 +45,26 @@ public class ActionController {
     @GetMapping("/getRoomStatusList")
     public String getRoomStatusList() throws JsonProcessingException {
         return objectMapper.writeValueAsString(roomService.getRoomStatusList());
+    }
+
+    @GetMapping("/getToken")
+    public String getToken(HttpServletRequest request) {
+        return (String) request.getSession().getAttribute("token");
+    }
+
+    @GetMapping("/getReady")
+    public String getReady(@RequestParam("roomId") int roomId) {
+        ArrayList<ArrayList<String>> roomList = roomService.getRoomList();
+        ArrayList<Integer> roomReadyCountList = roomService.getRoomReadyCountList();
+
+        int hasPlayer = roomList.get(roomId).size();
+        int readyPlayer = roomReadyCountList.get(roomId);
+
+        //TODO 实际游戏中至少需要两名玩家才能开启,这里为了测试没有添加限制
+        if(hasPlayer == readyPlayer) {
+            return "READY";
+        } else {
+            return "NO";
+        }
     }
 }

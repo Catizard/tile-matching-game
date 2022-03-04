@@ -1,6 +1,8 @@
 package com.dreamtea.Game.GameServer.Handler;
 
+import com.dreamtea.Boot.Domain.World;
 import com.dreamtea.Boot.Service.RedisService;
+import com.dreamtea.Game.GroundServer.Service.RoomService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.Channel;
@@ -14,6 +16,10 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 @Component
 @ChannelHandler.Sharable
 public class ChatRoomHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
@@ -23,6 +29,11 @@ public class ChatRoomHandler extends SimpleChannelInboundHandler<TextWebSocketFr
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private RoomService roomService;
+    @Autowired
+    private World world;
 
     private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
@@ -42,30 +53,31 @@ public class ChatRoomHandler extends SimpleChannelInboundHandler<TextWebSocketFr
         }
 
         String name = ((String) redisService.get(remoteToken)).split("-")[1];
+        Map<String, String> mapMessage = new HashMap<>();
 
-        if("MESSAGE".equals(type)) {
-            for (Channel channel : channels) {
-                if (channel != curChannel) {
-//                InetSocketAddress addr = (InetSocketAddress) curChannel.remoteAddress();
-//                System.out.println("-----");
-//                System.out.println(addr.getAddress());
-//                System.out.println(addr.getHostName());
-//                System.out.println(addr.getHostString());
-//                System.out.println(addr.getPort());
-//                System.out.println("-----");
-                    channel.writeAndFlush(new TextWebSocketFrame(name + ":" + comment));
-                } else {
-                    channel.writeAndFlush(new TextWebSocketFrame(comment));
-                }
-            }
-        } else if("LOGIN".equals(type)) {
-            for (Channel channel : channels) {
-                channel.writeAndFlush(new TextWebSocketFrame(name + " in"));
-            }
-        } else if("LOGOUT".equals(type)) {
-            for (Channel channel : channels) {
-                channel.writeAndFlush(new TextWebSocketFrame(name + " out"));
-            }
+        //In default, type is MESSAGE
+        mapMessage.put("type","MESSAGE");
+
+        switch (type) {
+            case "MESSAGE":
+                mapMessage.put("message", name + ":" + comment);
+                break;
+            case "LOGIN":
+                mapMessage.put("message", name + " in");
+                break;
+            case "LOGOUT":
+                mapMessage.put("message", name + " out");
+                break;
+            case "READY":
+                mapMessage.put("type", "MAP");
+                //TODO 加入地图功能
+                ArrayList<Integer> initialMap = world.genMap("test.txt");
+                mapMessage.put("message", objectMapper.writeValueAsString(initialMap));
+                break;
+        }
+
+        for (Channel channel : channels) {
+            channel.writeAndFlush(new TextWebSocketFrame(objectMapper.writeValueAsString(mapMessage)));
         }
     }
 

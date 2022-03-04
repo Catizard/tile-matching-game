@@ -21,8 +21,17 @@ public class RoomConfigurer {
     public ArrayList<Boolean> roomStatusList() {
         ArrayList<Boolean> roomStatusList = new ArrayList<>();
         for (int i = 0;i < 10;++i) {
-            roomStatusList.add(true);
+            roomStatusList.add(false);
         }
         return roomStatusList;
+    }
+
+    @Bean("roomReadyCountList")
+    public ArrayList<Integer> roomReadyCountList() {
+        ArrayList<Integer> roomReadyCountList = new ArrayList<>();
+        for (int i = 0;i < 10;++i) {
+            roomReadyCountList.add(0);
+        }
+        return roomReadyCountList;
     }
 }

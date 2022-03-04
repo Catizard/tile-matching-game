@@ -52,8 +52,14 @@
                                 if(result == "OK") {
                                     (document.getElementById("buttonBlock" + inHand)).style.background = "url(\"img/sprBlock0.png\")";
                                     (document.getElementById("buttonBlock" + num)).style.background = "url(\"img/sprBlock0.png\")";
-                                } else {
+                                } else if(result == "NO") {
                                     inHand = num;
+                                } else if(result == "GAMEOVER") {
+                                    let d = new Date();
+                                    let gameovermessage = `{"remoteToken": "` + token + `", "type": "GAMEOVER", "message": ` + roomId + `,"timestamp": ` + d.getTime() + `}`;
+                                    gamesocket.send(gameovermessage);
+                                    roomsocket.send(gameovermessage);
+                                    divGround.innerHTML = "";
                                 }
                             }
                         });

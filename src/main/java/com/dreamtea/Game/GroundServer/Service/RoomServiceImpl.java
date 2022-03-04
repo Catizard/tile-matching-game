@@ -74,4 +74,9 @@ public class RoomServiceImpl implements RoomService {
     public void delReadyPlayer(int roomId) {
         roomReadyCountList.set(roomId, roomReadyCountList.get(roomId) - 1);
     }
+
+    @Override
+    public void delReadyAll(int roomId) {
+        roomReadyCountList.set(roomId, 0);
+    }
 }

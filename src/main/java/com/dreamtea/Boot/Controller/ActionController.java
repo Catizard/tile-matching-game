@@ -3,7 +3,6 @@ package com.dreamtea.Boot.Controller;
 import com.dreamtea.Boot.Service.RedisService;
 import com.dreamtea.Game.GroundServer.Service.GameService;
 import com.dreamtea.Game.GroundServer.Service.RoomService;
-import com.dreamtea.Game.Utils.ChannelUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +30,6 @@ public class ActionController {
 
     @PostMapping("/addBlock")
     public String addBlock(@RequestParam("inHand") int inHand, @RequestParam("remoteToken") String remoteToken, @RequestParam("blockId") int blockId) throws JsonProcessingException {
-        System.out.println(inHand);
-        System.out.println(blockId);
         if(inHand == -1 || blockId == -1) {
             return "NO";
         }
@@ -49,8 +46,18 @@ public class ActionController {
         map.set(inHand, 0);
         map.set(blockId, 0);
 
-        //TODO test代码
-        ChannelUtil.podCast("GAMEOVER");
+        redisService.set(keyToken, map);
+
+        int total = 0;
+        for (Integer val : map) {
+            if(val != 0) {
+                ++total;
+            }
+        }
+
+        if(total == 0) {
+            return "GAMEOVER";
+        }
         return "OK";
     }
 

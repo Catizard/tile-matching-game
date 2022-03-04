@@ -41,15 +41,13 @@ public class ChatRoomHandler extends SimpleChannelInboundHandler<TextWebSocketFr
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame frame) throws Exception {
         String json = frame.text();
-        System.out.println(json);
-        Channel curChannel = ctx.channel();
         JsonNode jsonNode = objectMapper.readTree(json);
 
         String remoteToken = jsonNode.get("remoteToken").asText();
         String type = jsonNode.get("type").asText();
-        String comment = jsonNode.get("message").asText();
+        String message = jsonNode.get("message").asText();
 
-        if(remoteToken == null || type == null || comment == null) {
+        if(remoteToken == null || type == null || message == null) {
             throw new IllegalArgumentException("message is not exist");
         }
 
@@ -61,13 +59,18 @@ public class ChatRoomHandler extends SimpleChannelInboundHandler<TextWebSocketFr
 
         switch (type) {
             case "MESSAGE":
-                mapMessage.put("message", name + ":" + comment);
+                mapMessage.put("message", name + ":" + message);
                 break;
             case "LOGIN":
                 mapMessage.put("message", name + " in");
                 break;
             case "LOGOUT":
                 mapMessage.put("message", name + " out");
+                int roomId = Integer.parseInt(jsonNode.get("message").asText());
+                int isReady = Integer.parseInt(jsonNode.get("isReady").asText());
+                if(isReady != 0) {
+                    roomService.delReadyPlayer(roomId);
+                }
                 break;
             case "READY":
                 mapMessage.put("type", "MAP");
@@ -76,6 +79,12 @@ public class ChatRoomHandler extends SimpleChannelInboundHandler<TextWebSocketFr
                 String keyToken = "map-" + remoteToken;
                 redisService.set(keyToken, initialMap);
                 mapMessage.put("message", objectMapper.writeValueAsString(initialMap));
+                break;
+            case "GAMEOVER":
+                roomId = Integer.parseInt(jsonNode.get("message").asText());
+                --roomId;
+                long timestamp = Long.parseLong(jsonNode.get("timestamp").asText());
+                roomService.delReadyAll(roomId);
                 break;
         }
 

@@ -12,4 +12,5 @@ public interface RoomService {
     void setOver(int roomId);
     void addReadyPlayer(int roomId);
     void delReadyPlayer(int roomId);
+    void delReadyAll(int roomId);
 }

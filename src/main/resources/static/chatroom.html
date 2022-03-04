@@ -10,11 +10,6 @@
     <script>
         let token = getToken();
         let roomId = getRequestParam("roomId");
-
-        let loginmessage = `{"remoteToken": "` + token + `", "type": "LOGIN", "message": ` + roomId + `}`;
-        let logoutmessage = `{"remoteToken": "` + token + `", "type": "LOGOUT", "message": ` + roomId + `}`;
-        let readymessage = `{"remoteToken": "` + token + `", "type": "READY", "message": ` + roomId + `}`;
-
         let selfReady = 0;
         let inHand = -1;
 
@@ -97,12 +92,14 @@
                 type: "GET",
                 async: false,
                 success: (result) => {
+                    selfReady = 1;
                     if(result == "READY") {
                         //ready message 表示的是整个房间已经全部准备完毕
+                        let readymessage = `{"remoteToken": "` + token + `", "type": "READY", "message": ` + roomId + `,"isReady": ` + selfReady + `}`;
                         gamesocket.send(readymessage);
                         roomsocket.send(readymessage);
                     }
-                    selfReady = 1;
+
                 }
             })
         }
@@ -134,6 +131,7 @@
                 gamesocket.onopen = (ev) => {
                     let ta = document.getElementById("responseText");
                     ta.value = "connection started";
+                    let loginmessage = `{"remoteToken": "` + token + `", "type": "LOGIN", "message": ` + roomId + `,"isReady": ` + selfReady + `}`;
                     gamesocket.send(loginmessage);
                 }
                 gamesocket.onclose = (ev) => {
@@ -143,6 +141,7 @@
 
                 roomsocket = new WebSocket("ws://localhost:8190/websocket");
                 roomsocket.onopen = (ev) => {
+                    let loginmessage = `{"remoteToken": "` + token + `", "type": "LOGIN", "message": ` + roomId + `,"isReady": ` + selfReady + `}`;
                     roomsocket.send(loginmessage);
                 }
             } else {
@@ -157,6 +156,7 @@
          首先这个函数需要一个返回值，其次要写成 addListener 的形式
         */
         window.addEventListener('beforeunload', () => {
+            let logoutmessage = `{"remoteToken": "` + token + `", "type": "LOGOUT", "message": ` + roomId + `,"isReady": ` + selfReady + `}`;
             gamesocket.send(logoutmessage);
             roomsocket.send(logoutmessage);
         },false);

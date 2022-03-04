@@ -3,6 +3,7 @@ package com.dreamtea.Boot.Controller;
 import com.dreamtea.Boot.Service.RedisService;
 import com.dreamtea.Game.GroundServer.Service.GameService;
 import com.dreamtea.Game.GroundServer.Service.RoomService;
+import com.dreamtea.Game.Utils.ChannelUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,9 @@ public class ActionController {
         //TODO 此处修改map的操作有些耦合
         map.set(inHand, 0);
         map.set(blockId, 0);
+
+        //TODO test代码
+        ChannelUtil.podCast("GAMEOVER");
         return "OK";
     }
 

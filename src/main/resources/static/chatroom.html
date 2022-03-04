@@ -16,6 +16,7 @@
         let readymessage = `{"remoteToken": "` + token + `", "type": "READY", "message": ` + roomId + `}`;
 
         let selfReady = 0;
+        let inHand = -1;
 
         let genMap = function (map) {
             // console.log(map);
@@ -46,16 +47,18 @@
                         }
                         $.ajax({
                             url: "/addBlock",
-                            type: "GET",
+                            type: "POST",
                             data: {
-                                blockId: num
+                                "inHand": inHand,
+                                "remoteToken": token,
+                                "blockId": num
                             },
                             success: (result) => {
-                                result = $.parseJSON(result);
-                                if(result.length === 2) {
-                                    console.log(result);
-                                    (document.getElementById("buttonBlock" + result[0])).style.background = "url(\"img/sprBlock0.png\")";
-                                    (document.getElementById("buttonBlock" + result[1])).style.background = "url(\"img/sprBlock0.png\")";
+                                if(result == "OK") {
+                                    (document.getElementById("buttonBlock" + inHand)).style.background = "url(\"img/sprBlock0.png\")";
+                                    (document.getElementById("buttonBlock" + num)).style.background = "url(\"img/sprBlock0.png\")";
+                                } else {
+                                    inHand = num;
                                 }
                             }
                         });
@@ -95,6 +98,7 @@
                 async: false,
                 success: (result) => {
                     if(result == "READY") {
+                        //ready message 表示的是整个房间已经全部准备完毕
                         gamesocket.send(readymessage);
                         roomsocket.send(readymessage);
                     }
@@ -118,8 +122,13 @@
                     //TODO 调整为JSON格式
                     if(message["type"] == "MAP") {
                         genMap(message["message"]);
-                    } else {
+                    } else if(message["type"] == "MESSAGE"){
                         ta.value += "\n" + message["message"];
+                    } else if(message["type"] == "GAMEOVER") {
+                        ta.value += "\n" + message["message"] + " is winner";
+                        //refresh divGround
+                        let divGround = document.getElementById("divGround");
+                        divGround.innerHTML = "";
                     }
                 }
                 gamesocket.onopen = (ev) => {
@@ -166,7 +175,7 @@
                 </div>
             </div>
             <div class="col-md-2">
-                <!-- left panel -->
+                <!-- right panel -->
                 <div style="display: inline-flex; flex-direction: column; height: 100vh;">
                     <textarea id="responseText" style="flex: 1"></textarea>
                     <div class="col-md-10">

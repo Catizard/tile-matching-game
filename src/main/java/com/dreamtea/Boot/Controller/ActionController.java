@@ -1,12 +1,13 @@
 package com.dreamtea.Boot.Controller;
 
-import com.dreamtea.Boot.Domain.World;
 import com.dreamtea.Boot.Service.RedisService;
+import com.dreamtea.Game.GroundServer.Service.GameService;
 import com.dreamtea.Game.GroundServer.Service.RoomService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,25 +17,37 @@ import java.util.ArrayList;
 @RestController
 public class ActionController {
     @Autowired
-    RedisService redisService;
+    private RedisService redisService;
 
     @Autowired
-    World world;
+    private ObjectMapper objectMapper;
 
     @Autowired
-    ObjectMapper objectMapper;
+    private RoomService roomService;
 
     @Autowired
-    RoomService roomService;
+    private GameService gameService;
 
-    @GetMapping("/addBlock")
-    public String addBlock(@RequestParam("blockId") int id) throws JsonProcessingException {
-        int prevInhand = world.getInhand();
-        int num = world.tryAddBlock(id);
-        if(num == -1 || num != prevInhand) {
-            return "[]";
+    @PostMapping("/addBlock")
+    public String addBlock(@RequestParam("inHand") int inHand, @RequestParam("remoteToken") String remoteToken, @RequestParam("blockId") int blockId) throws JsonProcessingException {
+        System.out.println(inHand);
+        System.out.println(blockId);
+        if(inHand == -1 || blockId == -1) {
+            return "NO";
         }
-        return "[" + id + "," + num + "]";
+        //TODO 由于 token 分配的问题,这里可能还是会出现找到同一个map的问题
+        String keyToken = "map-" + remoteToken;
+        ArrayList<Integer> map = (ArrayList<Integer>) redisService.get(keyToken);
+
+        int num = gameService.tryAddBlock(map, inHand, blockId);
+        if(num == -1 || num != inHand) {
+            return "NO";
+        }
+
+        //TODO 此处修改map的操作有些耦合
+        map.set(inHand, 0);
+        map.set(blockId, 0);
+        return "OK";
     }
 
     @GetMapping("/getRoomList")
@@ -57,11 +70,14 @@ public class ActionController {
         ArrayList<ArrayList<String>> roomList = roomService.getRoomList();
         ArrayList<Integer> roomReadyCountList = roomService.getRoomReadyCountList();
 
+        //TODO roomId 的 api 需要统一
+        --roomId;
+
+        roomService.addReadyPlayer(roomId);
         int hasPlayer = roomList.get(roomId).size();
         int readyPlayer = roomReadyCountList.get(roomId);
 
-        //TODO 实际游戏中至少需要两名玩家才能开启,这里为了测试没有添加限制
-        if(hasPlayer == readyPlayer) {
+        if(hasPlayer == readyPlayer && hasPlayer >= 2) {
             return "READY";
         } else {
             return "NO";

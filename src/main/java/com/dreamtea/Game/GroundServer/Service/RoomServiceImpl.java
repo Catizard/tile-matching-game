@@ -54,10 +54,24 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void setRunning(int roomId) {
         roomStatusList.set(roomId, true);
+//        roomReadyCountList.add(roomId);
     }
 
     @Override
     public void setOver(int roomId) {
         roomStatusList.set(roomId, false);
+//        roomReadyCountList.add(roomId);
+    }
+
+
+    //TODO 在并发场景下这里会出现问题？
+    @Override
+    public void addReadyPlayer(int roomId) {
+        roomReadyCountList.set(roomId, roomReadyCountList.get(roomId) + 1);
+    }
+
+    @Override
+    public void delReadyPlayer(int roomId) {
+        roomReadyCountList.set(roomId, roomReadyCountList.get(roomId) - 1);
     }
 }

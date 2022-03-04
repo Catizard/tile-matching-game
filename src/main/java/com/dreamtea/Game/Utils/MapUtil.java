@@ -84,7 +84,6 @@ public class MapUtil {
             waitToUse.add(i);
         }
 
-        //TODO: gen random
         Random gen = new Random();
         for (int i = waitToUse.size() - 1;i >= 0;--i) {
             int l = i,r = gen.nextInt(waitToUse.size()) % (i + 1);

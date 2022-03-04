@@ -25,6 +25,7 @@ public class UserServiceImpl implements UserService{
 
         //数据传输格式: token-{token}, name-{name}
         //TODO 为了防止多地同时登陆，这里对 name 和 token 记录了双射来校验，有没有更好的办法？
+        //TODO 此处的 token 如果在同一时刻进入则会导致两个用户分发的 token 相同
         String genToken = UUID.randomUUID().toString();
         String token = "token-" + genToken, name = "name-" + userName;
         redisService.set(token, name);

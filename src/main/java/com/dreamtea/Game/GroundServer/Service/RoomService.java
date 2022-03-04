@@ -10,4 +10,6 @@ public interface RoomService {
     void del(String token, int roomId);
     void setRunning(int roomId);
     void setOver(int roomId);
+    void addReadyPlayer(int roomId);
+    void delReadyPlayer(int roomId);
 }

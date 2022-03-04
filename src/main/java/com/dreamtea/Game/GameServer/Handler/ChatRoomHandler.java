@@ -1,7 +1,7 @@
 package com.dreamtea.Game.GameServer.Handler;
 
-import com.dreamtea.Boot.Domain.World;
 import com.dreamtea.Boot.Service.RedisService;
+import com.dreamtea.Game.GroundServer.Service.GameService;
 import com.dreamtea.Game.GroundServer.Service.RoomService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,8 +32,9 @@ public class ChatRoomHandler extends SimpleChannelInboundHandler<TextWebSocketFr
 
     @Autowired
     private RoomService roomService;
+
     @Autowired
-    private World world;
+    private GameService gameService;
 
     private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
@@ -71,7 +72,9 @@ public class ChatRoomHandler extends SimpleChannelInboundHandler<TextWebSocketFr
             case "READY":
                 mapMessage.put("type", "MAP");
                 //TODO 加入地图功能
-                ArrayList<Integer> initialMap = world.genMap("test.txt");
+                ArrayList<Integer> initialMap = gameService.genMap("test.txt");
+                String keyToken = "map-" + remoteToken;
+                redisService.set(keyToken, initialMap);
                 mapMessage.put("message", objectMapper.writeValueAsString(initialMap));
                 break;
         }
@@ -81,7 +84,6 @@ public class ChatRoomHandler extends SimpleChannelInboundHandler<TextWebSocketFr
         }
     }
 
-    //TODO type 信息放回到 read0 中去分发了
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 //        String name = extractName(ctx);

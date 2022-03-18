@@ -14,9 +14,10 @@
         let inHand = -1;
 
         let genMap = function (map) {
+            console.log("invoked!");
             // console.log(map);
             map = $.parseJSON(map);
-            // console.log(map);
+            console.log(map);
             //gen the basic map
             let divGround = document.getElementById("divGround");
             for(let i = 0;i < 10;++i) {
@@ -82,7 +83,6 @@
             if(message === "") {
                 return ;
             }
-            console.log(message);
             send(message);
         }
         let sendready = () => {
@@ -121,10 +121,12 @@
                 gamesocket.onmessage = (ev) => {
                     let ta = document.getElementById("responseText");
                     let message = $.parseJSON(ev.data);
+                    console.log("gamesocket:onmessage" + message["type"]);
                     //TODO 调整为JSON格式
                     if(message["type"] == "MAP") {
                         genMap(message["message"]);
                     } else if(message["type"] == "MESSAGE"){
+                        console.log(message["message"]);
                         ta.value += "\n" + message["message"];
                     } else if(message["type"] == "GAMEOVER") {
                         ta.value += "\n" + message["message"] + " is winner";
@@ -133,6 +135,10 @@
                         divGround.innerHTML = "";
                         inHand = -1;
                         selfReady = 0;
+                    } else if(message["type"] == "REQUESTMAP") {
+                        let getmapmessage = `{"remoteToken": "` + token + `", "type": "GETMAP", "message": ` + roomId + `,"isReady": ` + selfReady + `}`;
+                        // console.log(getmapmessage);
+                        gamesocket.send(getmapmessage);
                     }
                 }
                 gamesocket.onopen = (ev) => {

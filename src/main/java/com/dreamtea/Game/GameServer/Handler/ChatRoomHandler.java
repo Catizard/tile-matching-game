@@ -74,12 +74,20 @@ public class ChatRoomHandler extends SimpleChannelInboundHandler<TextWebSocketFr
                 }
                 break;
             case "READY":
-                mapMessage.put("type", "MAP");
+                /*
+                TODO
+                 此处不应该直接把所有信息发送回远端,而是向所有用户进行广播:要求发送一条获取地图信息的请求
+                 如果不这么做，是获取不到用户的 token 的，但是这样做的另外一个问题就是：可能出现用户不同步
+                 为了解决可能出现的用户抢跑的问题，可以在网页端写入一个暂停三秒之后再开始游戏的设计
+                 等待所有用户的链接 ok 不是一个好的选择
+                 */
+                roomId = Integer.parseInt(jsonNode.get("message").asText());
+                mapMessage.put("type", "REQUESTMAP");
+                mapMessage.put("message", "GAMESTART");
                 //TODO 加入地图功能
                 ArrayList<Integer> initialMap = gameService.genMap("test.txt");
-                String keyToken = "map-" + remoteToken;
-                redisService.set(keyToken, initialMap);
-                mapMessage.put("message", objectMapper.writeValueAsString(initialMap));
+                String keyMap = "map-" + roomId;
+                redisService.set(keyMap, initialMap);
                 break;
             case "GAMEOVER":
                 roomId = Integer.parseInt(jsonNode.get("message").asText());
@@ -89,6 +97,18 @@ public class ChatRoomHandler extends SimpleChannelInboundHandler<TextWebSocketFr
                 mapMessage.put("type","GAMEOVER");
                 mapMessage.put("message",((String) redisService.get(remoteToken)).split("-")[1]);
                 break;
+            case "GETMAP":
+                //特别的, 本条信息不广播
+                mapMessage.put("type", "MAP");
+                roomId = Integer.parseInt(jsonNode.get("message").asText());
+                ArrayList<Integer> realMap = (ArrayList<Integer>) redisService.get("map-" + roomId);
+                String keyToken = "map-" + remoteToken;
+                redisService.set(keyToken, realMap);
+                mapMessage.put("message", objectMapper.writeValueAsString(realMap));
+                ctx.channel().writeAndFlush(new TextWebSocketFrame(objectMapper.writeValueAsString(mapMessage)));
+                return ;
+            default:
+                throw new IllegalArgumentException("message type error");
         }
 
         for (Channel channel : channels) {

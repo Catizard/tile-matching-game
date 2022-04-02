@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class PageController {
@@ -33,40 +32,19 @@ public class PageController {
     }
 
     @PostMapping("/login")
-    public String doLogin(@RequestParam(name = "user_name", required = false) String userName, @RequestParam(name = "password", required = false) String password, HttpServletRequest request , HttpServletResponse response) {
-//        System.out.println(request.getSession().getAttribute("token"));
+    public String doLogin(@RequestParam(name = "user_name", required = false) String userName, @RequestParam(name = "password", required = false) String password, HttpServletRequest request) {
         User user = userService.login(userName, password);
         if(user != null) {
-            //TODO change user's login state and automatically remove it when user closed the window
             String token = (String) redisService.get("name-" + user.getUserName());
-//            if(token == null) {
-//                return "redirect:/login";
-//            }
-            /*
-            TODO
-            此处有一个比较严重的问题:
-            场景:
-                一个浏览器同时开启多个页面,此时由于cookie的共享性质会导致多个页面可以同时登陆同一个帐号
-            我不知道怎么解决,我觉得不能使用cookie/session作为共享
-
-            可以在写入的时候把信息压入页面中
-            之后在页面要验证的时候再把信息传回来
-            问题在于这里必须重定向回到一个页面,但是重定向的时候会导致信息的丢失
-
-            目前的做法是直接把内容写入到一个 session 中,并且在前台接收到这个 token
-            之后在某些特殊的地方再进行身份验证
-             */
             request.getSession().setAttribute("token", token);
             return "redirect:/roomselect";
         } else {
-//            model.addAttribute("login_msg", "incorrect credentials");
             return "redirect:/login";
         }
     }
 
     @GetMapping("/chatroom")
     public String roomPage(@RequestParam("roomId") int roomId) {
-        System.out.println(roomId);
         return "chatroom";
     }
 }

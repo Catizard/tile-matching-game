@@ -14,10 +14,7 @@
         let inHand = -1;
 
         let genMap = function (map) {
-            console.log("invoked!");
-            // console.log(map);
             map = $.parseJSON(map);
-            console.log(map);
             //gen the basic map
             let divGround = document.getElementById("divGround");
             for(let i = 0;i < 10;++i) {
@@ -57,7 +54,7 @@
                                     inHand = num;
                                 } else if(result == "GAMEOVER") {
                                     let d = new Date();
-                                    let gameovermessage = `{"remoteToken": "` + token + `", "type": "GAMEOVER", "message": ` + roomId + `,"timestamp": ` + d.getTime() + `}`;
+                                    let gameovermessage = `{"remoteToken": "` + token + `", "type": "GAMEOVER", "roomId": ` + roomId + `,"timestamp": ` + d.getTime() + `}`;
                                     gamesocket.send(gameovermessage);
                                     roomsocket.send(gameovermessage);
                                 }
@@ -67,16 +64,19 @@
                 }
             }
         }
+
         let send = function(message) {
             if(!window.WebSocket) {
                 return ;
             }
             if(gamesocket.readyState == WebSocket.OPEN) {
-                gamesocket.send(`{"remoteToken": "` + token + `", "type": "MESSAGE", "message": "` + message + `"}`);
+                let s_message = `{"remoteToken": "` + token + `", "type": "MESSAGE", "roomId": ` + roomId + `, "message": "` + message + `"}`;
+                gamesocket.send(s_message);
             } else {
                 alert("connection havent opened");
             }
         }
+
         let sendmessage = () => {
             let textMessage = document.getElementById("textMessage");
             let message = textMessage.value;
@@ -100,7 +100,7 @@
                     selfReady = 1;
                     if(result == "READY") {
                         //ready message 表示的是整个房间已经全部准备完毕
-                        let readymessage = `{"remoteToken": "` + token + `", "type": "READY", "message": ` + roomId + `,"isReady": ` + selfReady + `}`;
+                        let readymessage = `{"remoteToken": "` + token + `", "type": "READY", "roomId": ` + roomId + `,"isReady": ` + selfReady + `}`;
                         gamesocket.send(readymessage);
                         roomsocket.send(readymessage);
                     }
@@ -113,7 +113,7 @@
 
         window.onload = () => {
             if(window.WebSocket) {
-                let port = 8180 + parseInt(roomId) - 1;
+                let port = 8180 + parseInt(roomId);
                 console.log(port);
 
                 gamesocket = new WebSocket("ws://localhost:" + port + "/websocket");
@@ -122,7 +122,6 @@
                     let ta = document.getElementById("responseText");
                     let message = $.parseJSON(ev.data);
                     console.log("gamesocket:onmessage" + message["type"]);
-                    //TODO 调整为JSON格式
                     if(message["type"] == "MAP") {
                         genMap(message["message"]);
                     } else if(message["type"] == "MESSAGE"){
@@ -136,15 +135,14 @@
                         inHand = -1;
                         selfReady = 0;
                     } else if(message["type"] == "REQUESTMAP") {
-                        let getmapmessage = `{"remoteToken": "` + token + `", "type": "GETMAP", "message": ` + roomId + `,"isReady": ` + selfReady + `}`;
-                        // console.log(getmapmessage);
+                        let getmapmessage = `{"remoteToken": "` + token + `", "type": "GETMAP", "roomId": ` + roomId + `,"isReady": ` + selfReady + `}`;
                         gamesocket.send(getmapmessage);
                     }
                 }
                 gamesocket.onopen = (ev) => {
                     let ta = document.getElementById("responseText");
                     ta.value = "connection started";
-                    let loginmessage = `{"remoteToken": "` + token + `", "type": "LOGIN", "message": ` + roomId + `,"isReady": ` + selfReady + `}`;
+                    let loginmessage = `{"remoteToken": "` + token + `", "type": "LOGIN", "roomId": ` + roomId + `,"isReady": ` + selfReady + `}`;
                     gamesocket.send(loginmessage);
                 }
                 gamesocket.onclose = (ev) => {
@@ -154,8 +152,9 @@
 
                 roomsocket = new WebSocket("ws://localhost:8190/websocket");
                 roomsocket.onopen = (ev) => {
-                    let loginmessage = `{"remoteToken": "` + token + `", "type": "LOGIN", "message": ` + roomId + `,"isReady": ` + selfReady + `}`;
+                    let loginmessage = `{"remoteToken": "` + token + `", "type": "LOGIN", "roomId": ` + roomId + `,"isReady": ` + selfReady + `}`;
                     roomsocket.send(loginmessage);
+                    console.log("send login message");
                 }
             } else {
                 alert("Explorer version is too low!");
@@ -163,13 +162,12 @@
         }
 
         /*
-        TODO
-         onbeforeunloadshi事件某些时候不会触发 原因未知
+         onbeforeunload事件某些时候不会触发 原因未知
          根据 stackoverflow[https://stackoverflow.com/questions/27617019/onbeforeunload-not-working] 的说法
          首先这个函数需要一个返回值，其次要写成 addListener 的形式
         */
         window.addEventListener('beforeunload', () => {
-            let logoutmessage = `{"remoteToken": "` + token + `", "type": "LOGOUT", "message": ` + roomId + `,"isReady": ` + selfReady + `}`;
+            let logoutmessage = `{"remoteToken": "` + token + `", "type": "LOGOUT", "roomId": ` + roomId + `,"isReady": ` + selfReady + `}`;
             gamesocket.send(logoutmessage);
             roomsocket.send(logoutmessage);
         },false);

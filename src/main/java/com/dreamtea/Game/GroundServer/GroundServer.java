@@ -10,7 +10,7 @@ public class GroundServer {
     @Autowired
     @Qualifier("groundServerBootstrap")
     private ServerBootstrap b;
-    //TODO 此处的 port 是写死的
+
     private final int port = 8190;
 
     public void start() throws InterruptedException {

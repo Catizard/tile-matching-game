@@ -8,7 +8,7 @@
     <script src = "/js/utils.js"></script>
     <script>
         let token = getToken(),roomNum = [],roomStatus = [];
-
+        let numRoom = 1;
         let getRoomList = () => {
             $.ajax({
                 url: "getRoomList",
@@ -16,7 +16,7 @@
                 async: false,
                 success: (resultJSON) => {
                     let jsonObject = $.parseJSON(resultJSON);
-                    for (let i = 0;i < 10;++i) {
+                    for (let i = 0;i < numRoom;++i) {
                         roomNum[i] = jsonObject[i].length;
                     }
                 }
@@ -37,7 +37,7 @@
         let refreshRoomList = () => {
             getRoomList();
             getRoomStatusList();
-            for (let i = 0;i < 10;++i) {
+            for (let i = 0;i < numRoom;++i) {
                 let textRoom = document.getElementById("textRoom" + (i + 1));
                 textRoom.innerHTML = "room" + (i + 1) + " " + roomNum[i] + "/6";
                 let buttonRoom = document.getElementById("buttonRoom" + (i + 1));
@@ -58,19 +58,18 @@
 
         window.onload = () => {
             let divGround = document.getElementById("divGround");
-            for (let i = 0; i < 10; ++i) {
+            for (let i = 0; i < numRoom; ++i) {
                 divGround.innerHTML += "<button type='button' style = \"border: 3px solid #100000; height: 64px; width: 1024px\" id = buttonRoom" + (i + 1) + "></button>";
             }
-            for (let i = 0; i < 10; ++i) {
+            for (let i = 0; i < numRoom; ++i) {
                 let buttonRoom = document.getElementById("buttonRoom" + (i + 1));
                 buttonRoom.innerHTML += "<span id = textRoom" + (i + 1) + "> room" + (i + 1) + " 0 / 6</span>"
                 buttonRoom.onclick = () => {
                     if(roomNum[i] === 6 || roomStatus[i] == true) return ;
-                    window.location = location.origin + "/chatroom?roomId=" + (i + 1);
+                    window.location = location.origin + "/chatroom?roomId=" + i;
                 }
             }
             refreshRoomList();
-            console.log(roomNum);
         }
     </script>
 </head>

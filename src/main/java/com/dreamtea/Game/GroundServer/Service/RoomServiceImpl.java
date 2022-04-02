@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 @Service
 public class RoomServiceImpl implements RoomService {
-    //TODO 初始大小 10 是在这里写死的 页面也是 以后或许需要调整一下?
 
     @Autowired
     @Qualifier("roomList")
@@ -44,6 +43,12 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void del(String token, int roomId) {
         roomList.get(roomId).remove(token);
+        //if the game started before and there is only one player in the game
+        //the winner is just defined
+        //should sent a message to stop the game
+        if(roomStatusList.get(roomId) && roomList.get(roomId).size() == 1) {
+            setOver(roomId);
+        }
     }
 
     @Override
@@ -63,8 +68,6 @@ public class RoomServiceImpl implements RoomService {
 //        roomReadyCountList.add(roomId);
     }
 
-
-    //TODO 在并发场景下这里会出现问题？
     @Override
     public void addReadyPlayer(int roomId) {
         roomReadyCountList.set(roomId, roomReadyCountList.get(roomId) + 1);

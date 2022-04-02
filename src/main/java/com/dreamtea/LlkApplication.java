@@ -8,11 +8,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 public class LlkApplication {
-
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, NoSuchFieldException, IllegalAccessException {
         ConfigurableApplicationContext ctx = SpringApplication.run(LlkApplication.class, args);
         ((GameServer) ctx.getBean("gameServer")).start();
         ((GroundServer) ctx.getBean("groundServer")).start();
     }
-
 }

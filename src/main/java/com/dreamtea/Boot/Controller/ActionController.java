@@ -33,7 +33,6 @@ public class ActionController {
         if(inHand == -1 || blockId == -1) {
             return "NO";
         }
-        //TODO 由于 token 分配的问题,这里可能还是会出现找到同一个map的问题
         String keyToken = "map-" + remoteToken;
         ArrayList<Integer> map = (ArrayList<Integer>) redisService.get(keyToken);
 
@@ -42,7 +41,6 @@ public class ActionController {
             return "NO";
         }
 
-        //TODO 此处修改map的操作有些耦合
         map.set(inHand, 0);
         map.set(blockId, 0);
 
@@ -80,9 +78,6 @@ public class ActionController {
     public String getReady(@RequestParam("roomId") int roomId) {
         ArrayList<ArrayList<String>> roomList = roomService.getRoomList();
         ArrayList<Integer> roomReadyCountList = roomService.getRoomReadyCountList();
-
-        //TODO roomId 的 api 需要统一
-        --roomId;
 
         roomService.addReadyPlayer(roomId);
         int hasPlayer = roomList.get(roomId).size();

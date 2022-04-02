@@ -11,7 +11,7 @@ public class RoomConfigurer {
     @Bean("roomList")
     public ArrayList<ArrayList<String>> roomListFactory() {
         ArrayList<ArrayList<String>> roomList = new ArrayList<>(10);
-        for (int i = 0;i < 10;++i) {
+        for (int i = 0;i < GameConfig.CHOOSEABLE_ROOM_COUNT;++i) {
             roomList.add(new ArrayList<>(6));
         }
         return roomList;
@@ -20,7 +20,7 @@ public class RoomConfigurer {
     @Bean("roomStatusList")
     public ArrayList<Boolean> roomStatusList() {
         ArrayList<Boolean> roomStatusList = new ArrayList<>();
-        for (int i = 0;i < 10;++i) {
+        for (int i = 0;i < GameConfig.CHOOSEABLE_ROOM_COUNT;++i) {
             roomStatusList.add(false);
         }
         return roomStatusList;
@@ -29,7 +29,7 @@ public class RoomConfigurer {
     @Bean("roomReadyCountList")
     public ArrayList<Integer> roomReadyCountList() {
         ArrayList<Integer> roomReadyCountList = new ArrayList<>();
-        for (int i = 0;i < 10;++i) {
+        for (int i = 0;i < GameConfig.CHOOSEABLE_ROOM_COUNT;++i) {
             roomReadyCountList.add(0);
         }
         return roomReadyCountList;

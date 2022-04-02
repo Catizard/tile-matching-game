@@ -1,10 +1,7 @@
 package com.dreamtea.Game.GroundServer.Handler;
 
-import com.dreamtea.Boot.Service.RedisService;
-import com.dreamtea.Game.GroundServer.Service.RoomService;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.netty.channel.Channel;
+import com.dreamtea.Game.MessagePipeline.MessagePipeline;
+import com.dreamtea.Game.Utils.AdaptableMessageFactory;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -15,58 +12,30 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
+
 @Component
 @ChannelHandler.Sharable
 public class GroundHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
+    private final static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-    private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-
-    @Autowired
-    private RedisService redisService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    @Resource(name = "GroundPipeline")
+    private MessagePipeline messagePipeline;
 
     @Autowired
-    private RoomService roomService;
+    private AdaptableMessageFactory messageFactory;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame frame) throws Exception {
         String json = frame.text();
         System.out.println(json);
-        if(json == null) {
-            throw new IllegalArgumentException("message is not exist");
-        }
+        String result = messagePipeline.readMessage(json);
+        //send a refresh message to everyone at ground page
+        broadcast(result);
+    }
 
-        JsonNode jsonNode = objectMapper.readTree(json);
-        String remoteToken = jsonNode.get("remoteToken").asText();
-        String type = jsonNode.get("type").asText();
-        String roomId = jsonNode.get("message").asText();
-
-        if(remoteToken == null || type == null || roomId == null) {
-            throw new IllegalArgumentException("message is not exist");
-        }
-
-        int numRoomId = Integer.parseInt(roomId);
-
-        //TODO api 对于 roomId 的定义需要统一
-        --numRoomId;
-
-        //TODO 此处需要验证 remoteToken 的合法性
-        String name = ((String) redisService.get(remoteToken)).split("-")[1];
-        if("LOGIN".equals(type)) {
-            roomService.add(name, numRoomId);
-        } else if("LOGOUT".equals(type)) {
-            roomService.del(name, numRoomId);
-        } else if("READY".equals(type)) {
-            roomService.setRunning(numRoomId);
-        } else if("GAMEOVER".equals(type)) {
-            roomService.setOver(numRoomId);
-        }
-        //抛弃 type 是 MESSAGE 的信息
-        for(Channel channel : channels) {
-            channel.writeAndFlush(new TextWebSocketFrame("refresh"));
-        }
+    public void broadcast(String message) {
+        channels.forEach(channel -> channel.writeAndFlush(messageFactory.castAdaptMessage(message)));
     }
 
     @Override

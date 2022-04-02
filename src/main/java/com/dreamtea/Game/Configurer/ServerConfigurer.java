@@ -30,7 +30,7 @@ public class ServerConfigurer {
     @Bean
     public ArrayList<ChatRoomHandler> chatRoomHandlerListFactory() {
         ArrayList<ChatRoomHandler> chatRoomHandlerList = new ArrayList<>();
-        for(int i = 0;i < 10;++i) {
+        for(int i = 0;i < GameConfig.CHOOSEABLE_ROOM_COUNT;++i) {
             chatRoomHandlerList.add(chatRoomHandlerFactory());
         }
         return chatRoomHandlerList;
@@ -73,7 +73,7 @@ public class ServerConfigurer {
     public ArrayList<ServerBootstrap> serverBootstrapList() {
         ArrayList<ServerBootstrap> serverBootstrapList = new ArrayList<>();
         ArrayList<ChatRoomHandler> chatRoomHandlerList = chatRoomHandlerListFactory();
-        for(int i = 0;i < 10;++i) {
+        for(int i = 0;i < GameConfig.CHOOSEABLE_ROOM_COUNT;++i) {
             serverBootstrapList.add(serverBootstrap(chatRoomHandlerList.get(i)));
         }
         return serverBootstrapList;

@@ -1,5 +1,6 @@
 package com.dreamtea.Game.GameServer;
 
+import com.dreamtea.Game.Configurer.GameConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,11 +15,10 @@ public class GameServer {
     @Qualifier("serverBootstrapList")
     private ArrayList<ServerBootstrap> serverBootstrapList;
 
-    //TODO 此处的端口是写死的
     private static final int port = 8180;
 
     public void start() throws InterruptedException {
-        for (int i = 0;i < 10;++i) {
+        for (int i = 0; i < GameConfig.CHOOSEABLE_ROOM_COUNT; ++i) {
             serverBootstrapList.get(i).bind(port + i);
         }
     }

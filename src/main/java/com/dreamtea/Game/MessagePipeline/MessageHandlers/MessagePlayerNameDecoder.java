@@ -24,17 +24,23 @@ public class MessagePlayerNameDecoder extends MessageHandler {
     @Override
     public String handle(String... messages) throws Exception {
         if(messages.length != 1) {
+            //TODO this limitation is just for test
             throw new IllegalArgumentException("wrong message counts");
         }
 
         String message = messages[0];
         Map<String, Object> decodedResult = objectMapper.readValue(message, Map.class);
 
-        String remoteToken = (String) decodedResult.get("remoteToken");
+        return handle(decodedResult);
+    }
+
+    @Override
+    public String handle(Map<String, Object> messages) throws Exception {
+        String remoteToken = (String) messages.get("remoteToken");
         String playerName = ((String) redisService.get(remoteToken)).split(REDIS_SPLIT_SYMBOL)[1];
 
-        decodedResult.put("playerName", playerName);
+        messages.put("playerName", playerName);
 
-        return nextHandler.handle(decodedResult);
+        return nextHandler.handle(messages);
     }
 }

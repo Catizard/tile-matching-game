@@ -27,16 +27,6 @@ public class GameMessageLogoutHandler extends MessageHandler {
 
         if(isSupported(SUPPORTEDTYPES, type)) {
             int roomId = ((int) messages.get("roomId"));
-
-            /*TODO 删除player
-            这里有一个很不可控的问题，因为房间列表的消息管道和游戏房间内的消息管道隔离了
-                    所以可能存在竟态关系
-            Ground的消息管道中接收到一个logout事件的时候会删除指定的player
-            而如果Ground先接收到一个信息，那么这里获取到的成员个数就是1
-            反过来如果是Game先接收到一个信息，那么这里获取到的成员个数是2
-                    因此可能需要去掉Ground的消息管道
-            避免竟态事件的引发
-            */
             String remoteToken = ((String) messages.get("remoteToken")).split(REDIS_SPLIT_SYMBOL)[1];
             roomservice.delMemberInRoom(remoteToken, roomId);
 

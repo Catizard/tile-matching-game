@@ -1,6 +1,5 @@
 package com.dreamtea.Game.GroundServer.Handler;
 
-import com.dreamtea.Game.MessagePipeline.MessagePipeline;
 import com.dreamtea.Game.Utils.AdaptableMessageFactory;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -12,15 +11,10 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-
 @Component
 @ChannelHandler.Sharable
 public class GroundHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
     private final static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-
-    @Resource(name = "GroundPipeline")
-    private MessagePipeline messagePipeline;
 
     @Autowired
     private AdaptableMessageFactory messageFactory;
@@ -29,9 +23,11 @@ public class GroundHandler extends SimpleChannelInboundHandler<TextWebSocketFram
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame frame) throws Exception {
         String json = frame.text();
         System.out.println(json);
-        String result = messagePipeline.readMessage(json);
-        //send a refresh message to everyone at ground page
-        broadcast(result);
+        //dont need a pipeline to handle the message
+        broadcast("refresh");
+//        String result = messagePipeline.readMessage(json);
+//        //send a refresh message to everyone at ground page
+//        broadcast(result);
     }
 
     public void broadcast(String message) {

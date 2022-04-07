@@ -18,14 +18,15 @@ public class GroundMessageRoomStatusHandler extends MessageHandler {
     public String handle(Map<String, Object> messages) throws Exception {
         String type = (String) messages.get("type");
 
-        if(isSupported(SUPPORTEDTYPES, type)) {
-            Integer roomId = (Integer) messages.get("roomId");
-            if("READY".equals(type)) {
-                roomService.setRunning(roomId);
-            } else if("GAMEOVER".equals(type)) {
-                roomService.setOver(roomId);
-            }
-        }
+        //TODO delete it temp
+//        if(isSupported(SUPPORTEDTYPES, type)) {
+//            Integer roomId = (Integer) messages.get("roomId");
+//            if("READY".equals(type)) {
+//                roomService.setRunning(roomId);
+//            } else if("GAMEOVER".equals(type)) {
+//                roomService.setOver(roomId);
+//            }
+//        }
         return nextHandler.handle(messages);
     }
 }

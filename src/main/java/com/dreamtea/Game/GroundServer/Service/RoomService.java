@@ -3,14 +3,18 @@ package com.dreamtea.Game.GroundServer.Service;
 import java.util.ArrayList;
 
 public interface RoomService {
-    ArrayList<ArrayList<String>> getRoomList();
+    ArrayList<ArrayList<String>> getRoomMemberList();
     ArrayList<Boolean> getRoomStatusList();
     ArrayList<Integer> getRoomReadyCountList();
-    void add(String token, int roomId);
-    void del(String token, int roomId);
+    ArrayList<String> getMemberListInRoom(int roomId);
+    void addMemberInRoom(String token, int roomId);
+    void delMemberInRoom(String token, int roomId);
     void setRunning(int roomId);
     void setOver(int roomId);
     void addReadyPlayer(int roomId);
     void delReadyPlayer(int roomId);
     void delReadyAll(int roomId);
+    int getMemberCountInRoom(int roomId);
+    boolean getRoomStatus(int roomId);
+
 }

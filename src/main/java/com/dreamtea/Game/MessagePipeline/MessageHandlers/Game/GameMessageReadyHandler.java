@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.dreamtea.Boot.Configurer.WebConfigurer.REDIS_MAP_PREFIX;
+
 @Component
 public class GameMessageReadyHandler extends MessageHandler {
     private static final String[] SUPPORTEDTYPES = {"READY"};
@@ -36,15 +38,17 @@ public class GameMessageReadyHandler extends MessageHandler {
             //TODO 加入随机选图系统
             ArrayList<Integer> initialMap = gameService.genMap("test.txt");
 
-            ArrayList<String> tokens = roomService.getRoomList().get(roomId);
+            ArrayList<String> tokens = roomService.getRoomMemberList().get(roomId);
             for(String token : tokens) {
-                String keyToken = "map-" + token;
+                String keyToken = REDIS_MAP_PREFIX + token;
                 redisService.set(keyToken, initialMap);
             }
 
             Map<String, String> map = new HashMap<>();
             map.put("type", "MAP");
             map.put("message", objectMapper.writeValueAsString(initialMap));
+
+            roomService.setRunning(roomId);
 
             return objectMapper.writeValueAsString(map);
         }

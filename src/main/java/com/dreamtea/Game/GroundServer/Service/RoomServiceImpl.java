@@ -26,7 +26,7 @@ public class RoomServiceImpl implements RoomService {
     ObjectMapper objectMapper;
 
     @Override
-    public ArrayList<ArrayList<String>> getRoomList() {
+    public ArrayList<ArrayList<String>> getRoomMemberList() {
         return roomList;
     }
 
@@ -36,19 +36,23 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void add(String token, int roomId) {
+    public void addMemberInRoom(String token, int roomId) {
         roomList.get(roomId).add(token);
     }
 
     @Override
-    public void del(String token, int roomId) {
+    public void delMemberInRoom(String token, int roomId) {
         roomList.get(roomId).remove(token);
-        //if the game started before and there is only one player in the game
-        //the winner is just defined
-        //should sent a message to stop the game
-        if(roomStatusList.get(roomId) && roomList.get(roomId).size() == 1) {
-            setOver(roomId);
-        }
+    }
+
+    @Override
+    public int getMemberCountInRoom(int roomId) {
+        return roomList.get(roomId).size();
+    }
+
+    @Override
+    public ArrayList<String> getMemberListInRoom(int roomId) {
+        return roomList.get(roomId);
     }
 
     @Override
@@ -81,5 +85,10 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void delReadyAll(int roomId) {
         roomReadyCountList.set(roomId, 0);
+    }
+
+    @Override
+    public boolean getRoomStatus(int roomId) {
+        return getRoomStatusList().get(roomId);
     }
 }

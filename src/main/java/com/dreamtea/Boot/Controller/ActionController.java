@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 
+import static com.dreamtea.Boot.Configurer.WebConfigurer.REDIS_MAP_PREFIX;
+import static com.dreamtea.Boot.Configurer.WebConfigurer.REDIS_SPLIT_SYMBOL;
+
 @RestController
 public class ActionController {
     @Autowired
@@ -33,7 +36,8 @@ public class ActionController {
         if(inHand == -1 || blockId == -1) {
             return "NO";
         }
-        String keyToken = "map-" + remoteToken;
+        remoteToken = remoteToken.split(REDIS_SPLIT_SYMBOL)[1];
+        String keyToken = REDIS_MAP_PREFIX + remoteToken;
         ArrayList<Integer> map = (ArrayList<Integer>) redisService.get(keyToken);
 
         int num = gameService.tryAddBlock(map, inHand, blockId);
@@ -61,7 +65,7 @@ public class ActionController {
 
     @GetMapping("/getRoomList")
     public String getRoomList() throws JsonProcessingException {
-        return objectMapper.writeValueAsString(roomService.getRoomList());
+        return objectMapper.writeValueAsString(roomService.getRoomMemberList());
     }
 
     @GetMapping("/getRoomStatusList")
@@ -76,7 +80,7 @@ public class ActionController {
 
     @GetMapping("/getReady")
     public String getReady(@RequestParam("roomId") int roomId) {
-        ArrayList<ArrayList<String>> roomList = roomService.getRoomList();
+        ArrayList<ArrayList<String>> roomList = roomService.getRoomMemberList();
         ArrayList<Integer> roomReadyCountList = roomService.getRoomReadyCountList();
 
         roomService.addReadyPlayer(roomId);

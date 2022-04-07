@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+import static com.dreamtea.Boot.Configurer.WebConfigurer.REDIS_SPLIT_SYMBOL;
+
 @Component
 @Scope("prototype")
 public class MessagePlayerNameDecoder extends MessageHandler {
@@ -29,7 +31,7 @@ public class MessagePlayerNameDecoder extends MessageHandler {
         Map<String, Object> decodedResult = objectMapper.readValue(message, Map.class);
 
         String remoteToken = (String) decodedResult.get("remoteToken");
-        String playerName = ((String) redisService.get(remoteToken)).split("-")[1];
+        String playerName = ((String) redisService.get(remoteToken)).split(REDIS_SPLIT_SYMBOL)[1];
 
         decodedResult.put("playerName", playerName);
 

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static com.dreamtea.Boot.Configurer.WebConfigurer.REDIS_PLAYERNAME_PREFIX;
+
 @Controller
 public class PageController {
     @Autowired
@@ -35,7 +37,7 @@ public class PageController {
     public String doLogin(@RequestParam(name = "user_name", required = false) String userName, @RequestParam(name = "password", required = false) String password, HttpServletRequest request) {
         User user = userService.login(userName, password);
         if(user != null) {
-            String token = (String) redisService.get("name-" + user.getUserName());
+            String token = (String) redisService.get(REDIS_PLAYERNAME_PREFIX + user.getUserName());
             request.getSession().setAttribute("token", token);
             return "redirect:/roomselect";
         } else {

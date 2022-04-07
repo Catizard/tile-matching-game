@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
+import static com.dreamtea.Boot.Configurer.WebConfigurer.REDIS_PLAYERNAME_PREFIX;
+import static com.dreamtea.Boot.Configurer.WebConfigurer.REDIS_REMOTETOKEN_PREFIX;
+
 @Service("userService")
 public class UserServiceImpl implements UserService{
     @Autowired
@@ -25,7 +28,7 @@ public class UserServiceImpl implements UserService{
 
         //数据传输格式: token-{token}, name-{name}
         String genToken = UUID.randomUUID().toString();
-        String token = "token-" + genToken, name = "name-" + userName;
+        String token = REDIS_REMOTETOKEN_PREFIX + genToken, name = REDIS_PLAYERNAME_PREFIX + userName;
         redisService.set(token, name);
         redisService.set(name, token);
         return user;

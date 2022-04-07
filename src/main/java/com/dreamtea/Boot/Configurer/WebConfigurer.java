@@ -11,6 +11,10 @@ public class WebConfigurer implements WebMvcConfigurer {
     @Autowired
     AuthInterceptor authInterceptor;
 
+    public static String REDIS_SPLIT_SYMBOL = "=";
+    public static String REDIS_REMOTETOKEN_PREFIX = "token" + REDIS_SPLIT_SYMBOL;
+    public static String REDIS_PLAYERNAME_PREFIX = "name" + REDIS_SPLIT_SYMBOL;
+    public static String REDIS_MAP_PREFIX = "map" + REDIS_SPLIT_SYMBOL;
     /*
     TODO
     暂时移除了拦截器

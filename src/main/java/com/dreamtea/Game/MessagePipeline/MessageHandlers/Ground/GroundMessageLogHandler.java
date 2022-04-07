@@ -23,9 +23,9 @@ public class GroundMessageLogHandler extends MessageHandler {
 
         if(isSupported(SUPPORTEDTYPES, type)) {
             if("LOGIN".equals(type)) {
-                roomService.add(remoteToken, roomId);
+//                roomService.addMemberInRoom(remoteToken, roomId);
             } else if("LOGOUT".equals(type)) {
-                roomService.del(remoteToken, roomId);
+//                roomService.delMemberInRoom(remoteToken, roomId);
             }
         }
 

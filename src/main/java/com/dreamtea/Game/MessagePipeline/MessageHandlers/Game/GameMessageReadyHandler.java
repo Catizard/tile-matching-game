@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.dreamtea.Boot.Configurer.WebConfigurer.REDIS_MAP_PREFIX;
+import static com.dreamtea.Game.Configurer.GameConfig.*;
 
 @Component
 public class GameMessageReadyHandler extends MessageHandler {
@@ -35,11 +36,12 @@ public class GameMessageReadyHandler extends MessageHandler {
         String type = ((String) messages.get("type"));
         if(isSupported(SUPPORTEDTYPES, type)) {
             int roomId = ((int) messages.get("roomId"));
-            //TODO 加入随机选图系统
-            ArrayList<Integer> initialMap = gameService.genMap("test.txt");
+            int mapId = (int) (Math.random() * CHOOSEABLE_MAP_COUNT);
+            String loadMapName = FILE_GAMEMAP_PREFIX + mapId + FILE_GAMEMAP_SUFFIX;
+            ArrayList<Integer> initialMap = gameService.genMap(loadMapName);
 
             ArrayList<String> tokens = roomService.getRoomMemberList().get(roomId);
-            for(String token : tokens) {
+            for (String token : tokens) {
                 String keyToken = REDIS_MAP_PREFIX + token;
                 redisService.set(keyToken, initialMap);
             }

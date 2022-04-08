@@ -107,6 +107,6 @@ public class MapUtil {
     }
 
     public static void main(String[] args) {
-        ArrayList<Integer> testMap = genMap(readMap("test.txt"));
+        ArrayList<Integer> testMap = genMap(readMap("map0.txt"));
     }
 }

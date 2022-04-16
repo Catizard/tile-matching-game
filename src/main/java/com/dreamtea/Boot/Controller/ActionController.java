@@ -65,7 +65,7 @@ public class ActionController {
 
     @GetMapping("/getRoomList")
     public String getRoomList() throws JsonProcessingException {
-        return objectMapper.writeValueAsString(roomService.getRoomMemberList());
+        return objectMapper.writeValueAsString(roomService.getRoomMemberNameList());
     }
 
     @GetMapping("/getRoomStatusList")
@@ -80,7 +80,7 @@ public class ActionController {
 
     @GetMapping("/getReady")
     public String getReady(@RequestParam("roomId") int roomId) {
-        ArrayList<ArrayList<String>> roomList = roomService.getRoomMemberList();
+        ArrayList<ArrayList<String>> roomList = roomService.getRoomMemberNameList();
         ArrayList<Integer> roomReadyCountList = roomService.getRoomReadyCountList();
 
         roomService.addReadyPlayer(roomId);

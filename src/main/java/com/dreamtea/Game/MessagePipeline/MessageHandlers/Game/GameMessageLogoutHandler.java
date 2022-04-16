@@ -27,18 +27,20 @@ public class GameMessageLogoutHandler extends MessageHandler {
 
         if(isSupported(SUPPORTEDTYPES, type)) {
             int roomId = ((int) messages.get("roomId"));
-            String remoteToken = ((String) messages.get("remoteToken")).split(REDIS_SPLIT_SYMBOL)[1];
-            roomservice.delMemberInRoom(remoteToken, roomId);
+            String codedToken = ((String) messages.get("remoteToken"));
+            String realToken = codedToken.split(REDIS_SPLIT_SYMBOL)[1];
+            String realName = ((String) redisService.get(codedToken)).split(REDIS_SPLIT_SYMBOL)[1];
+            roomservice.delMemberInRoom(realToken, realName, roomId);
 
             int isReady = ((int) messages.get("isReady"));
-            if(isReady != 0) {
+            if (isReady != 0) {
                 roomservice.delReadyPlayer(roomId);
             }
 
-            if(roomservice.getMemberCountInRoom(roomId) == 1) {
+            if (roomservice.getMemberCountInRoom(roomId) == 1) {
                 //此时游戏直接结束,把信息转型成一个GameOver message由GameMessageGameOverHandler处理，向前台发送游戏结束信息
                 //但是此时游戏中剩下的玩家才是胜者，所以需要在这里修改playerName为剩下的玩家
-                String winnerToken = REDIS_REMOTETOKEN_PREFIX + roomservice.getMemberListInRoom(roomId).get(0);
+                String winnerToken = REDIS_REMOTETOKEN_PREFIX + roomservice.getRoomMemberTokenListInRoom(roomId).get(0);
                 String winnerName = ((String) redisService.get(winnerToken)).split(REDIS_SPLIT_SYMBOL)[1];
                 System.out.println(winnerName);
 

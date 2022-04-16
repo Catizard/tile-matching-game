@@ -40,7 +40,7 @@ public class GameMessageReadyHandler extends MessageHandler {
             String loadMapName = FILE_GAMEMAP_PREFIX + mapId + FILE_GAMEMAP_SUFFIX;
             ArrayList<Integer> initialMap = gameService.genMap(loadMapName);
 
-            ArrayList<String> tokens = roomService.getRoomMemberList().get(roomId);
+            ArrayList<String> tokens = roomService.getRoomMemberTokenListInRoom(roomId);
             for (String token : tokens) {
                 String keyToken = REDIS_MAP_PREFIX + token;
                 redisService.set(keyToken, initialMap);
